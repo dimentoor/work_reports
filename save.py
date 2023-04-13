@@ -8,9 +8,9 @@ class ExcelLoader:
         self.table = pd.DataFrame()
 
     # open file
-    def openfile(self):
+    def open_file(self):
         self.table = pd.read_excel(self.path, sheet_name=self.sheet_name)
-        print("openfile is done!")
+        print("Opened {}.".format(self.path))
 
     # read file
 
@@ -22,11 +22,11 @@ class ExcelDumper:
         self.table = pd.DataFrame()
 
     # write file
-    def writefile(self, filename, samples: dict):
+    def write_file(self, filename, samples: dict):
         with pd.ExcelWriter(filename) as writer:
             for sample_name, sample in samples.items():
                 sample.to_excel(writer, sheet_name=sample_name)
-        print("writefile is done!")
+        print("Wrote to {}.".format(filename))
 
 
 
