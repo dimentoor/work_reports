@@ -1,6 +1,7 @@
 import threats
 import analyze
 import urls
+import save
 import database
 
 if __name__ == '__main__':
@@ -19,9 +20,12 @@ if __name__ == '__main__':
     for obj in range(len(threats_objects)):
         threats_objects[obj].all_samples_threats()
         threats_objects[obj].save_result(urls.th_save_path[obj])
+        save.MongoDumper.df_to_json(threats_objects[obj].dict,
+                                    '{}_{}'.format(obj, threats_objects[obj].col_name))  # for mongo database - give object
         print(threats_objects[obj])
 
-    database.mongo_test()
+    # database.mongo_test()
+
     # # PROGRAM_VERSIONS
     # # create class object and merge reports
     # for path in urls.pv_open_path:
@@ -52,22 +56,22 @@ if __name__ == '__main__':
     #     network_attacks_objects[obj].save_result(urls.na_save_path[obj])
     #     print(network_attacks_objects[obj])
 
-    # dynamic report
-    # create class object
-
-    for path in urls.th_open_path:
-        dynamic_objects.append(analyze.Analyzer(path, urls.th_sheet_name))
-    for obj in range(len(dynamic_objects)):
-        dynamic_objects[obj].all_samples_th(dynamic_objects)
-        dynamic_objects[obj].save_result_th(urls.dsave_path_th[obj])
-        print(dynamic_objects[obj])
-
-    for path in urls.ab_open_path:
-        dynamic_objects.append(analyze.Analyzer(path, urls.ab_sheet_name))
-    for obj in range(len(dynamic_objects)):
-        dynamic_objects[obj].all_samples_ab(dynamic_objects)
-        dynamic_objects[obj].save_result_ab(urls.dsave_path_ab[obj])
-        print(dynamic_objects[obj])
+    # # dynamic report
+    # # create class object
+    #
+    # for path in urls.th_open_path:
+    #     dynamic_objects.append(analyze.Analyzer(path, urls.th_sheet_name))
+    # for obj in range(len(dynamic_objects)):
+    #     dynamic_objects[obj].all_samples_th(dynamic_objects)
+    #     dynamic_objects[obj].save_result_th(urls.dsave_path_th[obj])
+    #     print(dynamic_objects[obj])
+    #
+    # for path in urls.ab_open_path:
+    #     dynamic_objects.append(analyze.Analyzer(path, urls.ab_sheet_name))
+    # for obj in range(len(dynamic_objects)):
+    #     dynamic_objects[obj].all_samples_ab(dynamic_objects)
+    #     dynamic_objects[obj].save_result_ab(urls.dsave_path_ab[obj])
+    #     print(dynamic_objects[obj])
     #
     # dynamic_black_list = analyze.Analyzer()
     # dynamic_black_list.th_black_list(threats_objects)

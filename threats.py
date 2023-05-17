@@ -15,15 +15,18 @@ class ThreatsReport:
         self.types = 0
         self.types_num = 0
         self.unique = 0
-        self.open_obj = save.ExcelLoader(self.path,  self.sheet_name)
+        self.open_obj = save.ExcelLoader(self.path, self.sheet_name)
+        self.col_name = 'threats_collection'
+        self.dict = {}
 
     def save_result(self, save_path):
-        dict_samples = {"unique_sample": self.unique,
-                        "users_sample": self.users,
-                        "black_list_sample": self.black_list,
-                        "threat_types_sample": self.threat_types,
-                        "types_sample": self.types}
-        save.ExcelDumper.write_file(save_path, dict_samples)
+        self.dict = {
+            "unique_sample": self.unique,
+            "users_sample": self.users,
+            "black_list_sample": self.black_list,
+            "threat_types_sample": self.threat_types,
+            "types_sample": self.types}
+        save.ExcelDumper.write_file(save_path, self.dict)
 
     # start all functions
     def all_samples_threats(self):

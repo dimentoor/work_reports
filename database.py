@@ -6,40 +6,22 @@ from pymongo import MongoClient
 
 
 class Mongo:
-    def __init__(self):
-        pass
-
-
-def mongo_test():
     client = MongoClient('localhost', 27017)
-    # database
-    db = client['work_reports']
+    db = client['test_database']
 
-    # collection
-    # collection = db['test1_collection']
-    # posts = db['posts']
-    threats = db['threats_col']
+    # create collection for samples
+    @staticmethod
+    def create_collection(collection_name):
+        collection = Mongo.db[collection_name]
+        return collection
 
-# convert df to json
-    df.to_json(orient="columns")
+    # add documents into collection
+    @staticmethod
+    def add_doc(collection, doc):
+        collection_id = collection.insert_one(doc).inserted_id
+        # print(collection.list_collection_names())
 
-    принимаем коллекецию
-    записываем ее базу данных
-    работа с базой данных
-    # collection_id = collection.insert_one(post)
-    # collection_id = collection.insert_one(post1)
-    # post_id = posts.insert_one(post).inserted_id
 
-    col_list = db.list_collection_names()
-    print(db.list_collection_names())
-    # post = {"author": "Mike",
-    #         "text": "My first blog post!",
-    #         "tags": ["mongodb", "python", "pymongo"],
-    #         "date": '55'}
-    # post1 = {"author": "777",
-    #          "text": "8888",
-    #          "tags": ["89", "python", "pymongo"],
-    #          "date": '00'}
     # collection.delete_one(post)
     # collection.delete_one(post1)
     # posts.delete_one(post)
@@ -51,17 +33,14 @@ def mongo_test():
     #
     # print(db.list_collection_names())
 
-
-def insert_document(collection, data):
-    """ Function to insert a document into a collection and return the document's id."""
-    return collection.insert_one(data).inserted_id
-
-
-def delete_document(collection, query):
-    """ Function to delete a single document from a collection."""
-    collection.delete_one(query)
-    # result = my_collection.delete_many({"name": "Mr.Geek"})
-
+    # def insert_document(collection, data):
+    #     """ Function to insert a document into a collection and return the document's id."""
+    #     return collection.insert_one(data).inserted_id
+    #
+    # def delete_document(collection, query):
+    #     """ Function to delete a single document from a collection."""
+    #     collection.delete_one(query)
+    #     # result = my_collection.delete_many({"name": "Mr.Geek"})
 
 # # drop collection col1
 # if col.drop():
@@ -69,11 +48,11 @@ def delete_document(collection, query):
 # else:
 #     print('Not Present')
 
-def find_document(collection, elements, multiple=False):
-    """ Function to retrieve single or multiple documents from a provided
-    Collection using a dictionary containing a document's elements."""
-    if multiple:
-        results = collection.find(elements)
-        return [r for r in results]
-    else:
-        return collection.find_one(elements)
+# def find_document(collection, elements, multiple=False):
+#     """ Function to retrieve single or multiple documents from a provided
+#     Collection using a dictionary containing a document's elements."""
+#     if multiple:
+#         results = collection.find(elements)
+#         return [r for r in results]
+#     else:
+#         return collection.find_one(elements)

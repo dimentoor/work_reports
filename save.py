@@ -1,4 +1,7 @@
 import pandas as pd
+import pymongo
+import json
+import database
 
 
 class ExcelLoader:
@@ -29,25 +32,33 @@ class ExcelDumper:
 
 
 class MongoLoader:
-    loadfrommongo(collection)
-        берем докусенты
-    читаем их
-переводим в фреймы
-засовываем их в обхекты классов тредрепорт
+    pass
 
-class mongoDumper:
-    берет объект класса()
-    threats_objects[obj] засовываем то в дампер
-    берем из него датафреймы
-    делаем документы из них
-    засовываем в коллекцию
 
-    @staticmethhod
-    def func():
+#     loadfrommongo(collection)
+#         берем докусенты
+#     читаем их
+# переводим в фреймы
+# засовываем их в обхекты классов тредрепорт
+
+
+class MongoDumper:
+    def __init__(self):
         pass
 
+    @staticmethod
+    def df_to_json(class_object, collection_name):
+        # mongo_obj = database.Mongo()
+        collection = database.Mongo.create_collection(collection_name)
 
+        for sample_name, sample in class_object.items():
+            # print(sample)
+            print(type(sample))
+            tmp = sample.to_json(force_ascii=False, orient="index", indent=4)
+            # print(type(tmp))
+            print(json.loads(tmp))
+            print('\n')
+            collection_id = database.Mongo.add_doc(collection, json.loads(tmp))
 
-
-
-
+# with open('{}.json'.format(sample_name), 'w') as outfile:
+#     json.dump(tmp, outfile, ensure_ascii=False, indent=4, sort_keys=True)
