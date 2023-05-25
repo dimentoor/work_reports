@@ -1,47 +1,36 @@
 import basic
 import pandas as pd
 import numpy as np
-
-# sheet_name_ = 'list1'
-#
-# path_all = [
-#     '/Users/dmitrybaraboshkin/Documents/работа_ИБ/for_analysis_0207/input_reports/attack_1_0207.xlsx',
-#     '/Users/dmitrybaraboshkin/Documents/работа_ИБ/for_analysis_0130/input_reports/attack_1_0130.xlsx',
-#     '/Users/dmitrybaraboshkin/Documents/работа_ИБ/for_analysis_0125/input_reports/attack_1_0125.xlsx',
-#     '/Users/dmitrybaraboshkin/Documents/работа_ИБ/for_analysis_0125/input_reports/attack_2_0125.xlsx',
-#     '/Users/dmitrybaraboshkin/Documents/работа_ИБ/for_analysis_1227/input_reports/attack_1_1227.xlsx',
-#     '/Users/dmitrybaraboshkin/Documents/работа_ИБ/for_analysis_1227/input_reports/attack_2_1227.xlsx']
-#
-# save_path_all = [
-#     '/Users/dmitrybaraboshkin/Documents/работа_ИБ/for_analysis_0207/output_reports/REPORT_attack_1_0207.xlsx',
-#     '/Users/dmitrybaraboshkin/Documents/работа_ИБ/for_analysis_0130/output_reports/REPORT_attack_1_0130.xlsx',
-#     '/Users/dmitrybaraboshkin/Documents/работа_ИБ/for_analysis_0125/output_reports/REPORT_attack_1_0125.xlsx',
-#     '/Users/dmitrybaraboshkin/Documents/работа_ИБ/for_analysis_0125/output_reports/REPORT_attack_2_0125.xlsx',
-#     '/Users/dmitrybaraboshkin/Documents/работа_ИБ/for_analysis_1227/output_reports/REPORT_attack_1_1227.xlsx',
-#     '/Users/dmitrybaraboshkin/Documents/работа_ИБ/for_analysis_1227/output_reports/REPORT_attack_2_1227.xlsx']
+import save
 
 
-class NetworkAttacks(basic.Basic):
+class NetworkAttacks:
+    col_name = 'network_attacks_collection'
 
     def __init__(self, path, sheet_name):
+        self.path = path
+        self.sheet_name = sheet_name
         self.attacker_victim_1 = 0
         self.attacker_victim_2 = 0
         self.attacks = 0
         self.date_time_attack = 0
         self.date_attack = 0
-        super().__init__(path, sheet_name)
+        self.unique = 0
+        self.open_obj = save.ExcelLoader(self.path, self.sheet_name)
+        self.dict = {}
 
-    def save_result(self, filename):
-        dict_unique = {"unique_sample": self.unique,
-                       "attacks_sample": self.attacks,
-                       "attacker_victim_sample_1": self.attacker_victim_1,
-                       "attacker_victim_sample_2": self.attacker_victim_2,
-                       "date_time_attack_sample": self.date_time_attack,
-                       "date_attack_sample": self.date_attack}
-        self.writefile(filename, dict_unique)
+    def save_result(self, save_path):
+        self.dict = {
+            "unique_sample": self.unique,
+            "attacks_sample": self.attacks,
+            "attacker_victim_sample_1": self.attacker_victim_1,
+            "attacker_victim_sample_2": self.attacker_victim_2,
+            "date_time_attack_sample": self.date_time_attack,
+            "date_attack_sample": self.date_attack}
+        save.ExcelDumper.write_file(save_path, self.dict)
 
     def all_samples_network_attack(self):
-        self.openfile()
+        self.open_obj.open_file()
         self.unique_sample()
         self.attacks_sample()
         self.attacker_victim_sample_1()
@@ -49,8 +38,13 @@ class NetworkAttacks(basic.Basic):
         self.date_time_attacks_sample()
         self.date_attacks_sample()
 
+    def unique_sample(self):
+        self.unique = self.open_obj.table.nunique()
+
+        return self.unique
+
     def attacker_victim_sample_1(self):
-        self.attacker_victim_1 = pd.DataFrame(data=self.table[
+        self.attacker_victim_1 = pd.DataFrame(data=self.open_obj.table[
             ['Атакующий адрес', 'Атака', 'IP-адрес']].value_counts().to_frame())
 
         return self.attacker_victim_1
@@ -63,7 +57,7 @@ class NetworkAttacks(basic.Basic):
         # имя подсчитываемого поля
         out_column = 'Кол-во атак'
 
-        out = self.table[columns_list].groupby([groupby_column], group_keys=False).apply(
+        out = self.open_obj.table[columns_list].groupby([groupby_column], group_keys=False).apply(
             lambda x: basic.Basic.collapse(x, groupby_column, out_column))
 
         self.attacker_victim_2 = out.sort_values(by=[out_column], ascending=False)
@@ -79,7 +73,7 @@ class NetworkAttacks(basic.Basic):
         # имя подсчитываемого поля
         out_column = 'Кол-во атак'
 
-        out = self.table[columns_list].groupby([groupby_column], group_keys=False).apply(
+        out = self.open_obj.table[columns_list].groupby([groupby_column], group_keys=False).apply(
             lambda x: basic.Basic.collapse(x, groupby_column, out_column))
 
         self.attacks = out.sort_values(by=[out_column], ascending=False)
@@ -89,8 +83,7 @@ class NetworkAttacks(basic.Basic):
 
     def date_time_attacks_sample(self):
         # can be rework
-        self.date_time_attack = pd.DataFrame(data=self.table
-            ['Время атаки'])
+        self.date_time_attack = pd.DataFrame(data=self.open_obj.table['Время атаки'])
 
         # new data frame with split value columns
         divide_1 = self.date_time_attack["Время атаки"].str.split(".", n=1, expand=True)
@@ -110,15 +103,13 @@ class NetworkAttacks(basic.Basic):
         self.date_time_attack.drop(columns=["2"], inplace=True)
         self.date_time_attack.drop(columns=["3"], inplace=True)
 
-        self.date_time_attack = self.date_time_attack.groupby([
-            'Day'])[['time']].value_counts()
+        self.date_time_attack = self.date_time_attack.groupby(['Day'])[['time']].value_counts()
 
         return self.date_time_attack
 
     def date_attacks_sample(self):
         # can be rework
-        self.date_attack = pd.DataFrame(data=self.table
-            ['Время атаки'])
+        self.date_attack = pd.DataFrame(data=self.open_obj.table['Время атаки'])
 
         # new data frame with split value columns
         divide_1 = self.date_attack["Время атаки"].str.split(".", n=1, expand=True)
@@ -142,4 +133,3 @@ class NetworkAttacks(basic.Basic):
         self.date_attack.index = np.arange(1, len(self.date_attack) + 1)  # new index
 
         return self.date_attack
-

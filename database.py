@@ -1,13 +1,11 @@
-# connection to database soon
-import threats
-import pymongo
-import pandas as pd
 from pymongo import MongoClient
 
 
 class Mongo:
     client = MongoClient('localhost', 27017)
     db = client['test_database']
+
+    # collection_th = db[threats.ThreatsReport.col_name]
 
     # create collection for samples
     @staticmethod
@@ -19,8 +17,8 @@ class Mongo:
     @staticmethod
     def add_doc(collection, doc):
         collection_id = collection.insert_one(doc).inserted_id
+        # collection_th4 = main.collection_th.insert_one(collection_id)
         # print(collection.list_collection_names())
-
 
     # collection.delete_one(post)
     # collection.delete_one(post1)

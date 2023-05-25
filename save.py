@@ -1,5 +1,4 @@
 import pandas as pd
-import pymongo
 import json
 import database
 
@@ -52,13 +51,15 @@ class MongoDumper:
         collection = database.Mongo.create_collection(collection_name)
 
         for sample_name, sample in class_object.items():
-            # print(sample)
             print(type(sample))
             tmp = sample.to_json(force_ascii=False, orient="index", indent=4)
             # print(type(tmp))
             print(json.loads(tmp))
             print('\n')
             collection_id = database.Mongo.add_doc(collection, json.loads(tmp))
+
+        print("ADD to database {}.".format(collection_name))
+
 
 # with open('{}.json'.format(sample_name), 'w') as outfile:
 #     json.dump(tmp, outfile, ensure_ascii=False, indent=4, sort_keys=True)

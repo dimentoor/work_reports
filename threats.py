@@ -5,6 +5,7 @@ import numpy as np
 
 
 class ThreatsReport:
+    col_name = 'threats_collection'
 
     def __init__(self, path, sheet_name):
         self.path = path
@@ -16,7 +17,6 @@ class ThreatsReport:
         self.types_num = 0
         self.unique = 0
         self.open_obj = save.ExcelLoader(self.path, self.sheet_name)
-        self.col_name = 'threats_collection'
         self.dict = {}
 
     def save_result(self, save_path):
