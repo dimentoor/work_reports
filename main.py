@@ -65,24 +65,6 @@ if __name__ == '__main__':
     # # dynamic report
     # # create class object
 
-    # for path in urls.th_open_path:
-    #     dynamic_objects.append(analyze.Analyzer(path, urls.th_sheet_name))
-    # for obj in range(len(dynamic_objects)):
-    #     dynamic_objects[obj].all_samples_th(threats_objects)
-    #     dynamic_objects[obj].save_result_th(urls.dsave_path_th)
-    #     save.MongoDumper.df_to_json(dynamic_objects[obj].dict,
-    #                                 '{}_{}'.format(obj, dynamic_objects[obj].col_name_th))  # for mongo database
-    # print(dynamic_objects[obj])
-
-    # for path in urls.ab_open_path:
-    #     dynamic_objects.append(analyze.Analyzer(path, urls.ab_sheet_name))
-    # for obj in range(len(dynamic_objects)):
-    #     dynamic_objects[obj].all_samples_ab(antivirus_bases_objects)
-    #     dynamic_objects[obj].save_result_ab(urls.dsave_path_ab[obj])
-    #     save.MongoDumper.df_to_json(dynamic_objects[obj].dict,
-    #                                 '{}_{}'.format(obj, dynamic_objects[obj].col_name_ab))  # for mongo database
-    # print(dynamic_objects[obj])
-
     dynamic_th = analyze.Analyzer()
     dynamic_th.all_samples_th(threats_objects)
     dynamic_th.save_result_th(urls.dsave_path_th)
@@ -93,7 +75,3 @@ if __name__ == '__main__':
     dynamic_ab.save_result_ab(urls.dsave_path_ab)
     save.MongoDumper.df_to_json(dynamic_ab.dict, '{}_{}'.format('05', dynamic_ab.col_name_ab))
 
-    # dynamic_statuses = analyze.Analyzer()
-    # # 2 samples in one xlsx (ab_statuses_summ + ab_statuses_parts)
-    # dynamic_statuses.ab_statuses_dynamic(antivirus_bases_objects)
-    # dynamic_statuses.ab_statuses_summ(antivirus_bases_objects)

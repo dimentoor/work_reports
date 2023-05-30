@@ -51,11 +51,11 @@ class Analyzer:
             # print(report.black_list.columns.values)  # debug
         self.dblack_list = pd.concat(objects_list)
 
-        unique_count = self.dblack_list['Устройство'].value_counts()
+        unique_count = self.dblack_list['Учетная запись'].value_counts()
         # conversion to df and assigning new column names
         df_value_counts = pd.DataFrame(unique_count)
         df_value_counts = df_value_counts.reset_index()
-        df_value_counts.columns = ['Устройство', 'Количество вхождений']
+        df_value_counts.columns = ['Учетная запись', 'Количество вхождений']
         self.res_df = df_value_counts[df_value_counts['Количество вхождений'] == 4]
         self.res_df.index = np.arange(1, len(self.res_df) + 1)  # new index
 

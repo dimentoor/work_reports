@@ -43,9 +43,10 @@ class ThreatsReport:
         return self.unique
 
     # count  Кол-во угроз for each user (how does it work? or not)
+    # select ONLY ONE groupby column in all functions
     def black_list_sample(self):
         # по каким полям смотрим
-        columns_list = ['Устройство', 'Учетная запись', 'IP-адрес']
+        columns_list = ['Учетная запись', 'IP-адрес']
         # по какому полю группируем
         groupby_column = 'Учетная запись'
         # имя подсчитываемого поля
@@ -59,12 +60,13 @@ class ThreatsReport:
 
         return self.black_list
 
+    # select ONLY ONE groupby column in all functions
     def users_sample(self):
         self.users = pd.DataFrame(data=self.open_obj.table[
             ['Устройство', 'Учетная запись', 'IP-адрес',
              'Обнаруженный объект', 'Тип объекта']])
         self.users = self.users.groupby(
-            ['Устройство', 'Учетная запись'])[
+            ['Учетная запись', 'Устройство'])[
             ['IP-адрес', 'Обнаруженный объект', 'Тип объекта']].value_counts()
 
         return self.users
