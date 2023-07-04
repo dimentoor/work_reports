@@ -68,10 +68,10 @@ if __name__ == '__main__':
     dynamic_th = analyze.Analyzer()
     dynamic_th.all_samples_th(threats_objects)
     dynamic_th.save_result_th(urls.dsave_path_th)
-    save.MongoDumper.df_to_json(dynamic_th.dict, '{}_{}'.format('05', dynamic_th.col_name_th))
+    save.MongoDumper.df_to_json(dynamic_th.dict, '{}_{}'.format('06', dynamic_th.col_name_th))
 
     dynamic_ab = analyze.Analyzer()
     dynamic_ab.all_samples_ab(antivirus_bases_objects)
     dynamic_ab.save_result_ab(urls.dsave_path_ab)
-    save.MongoDumper.df_to_json(dynamic_ab.dict, '{}_{}'.format('05', dynamic_ab.col_name_ab))
+    save.MongoDumper.df_to_json(dynamic_ab.dict, '{}_{}'.format('06', dynamic_ab.col_name_ab))
 

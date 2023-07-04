@@ -24,7 +24,7 @@ class Analyzer:
             "black_list_summed_threats": self.res_df,
             "black_list_pv": self.dblack_list,
             "threat_types_summ": self.dtypes_summ,
-            "threat_types_perts": self.dtypes}
+            "threat_types_parts": self.dtypes}
         save.ExcelDumper.write_file(save_path, self.dict)
 
     def save_result_ab(self, save_path):

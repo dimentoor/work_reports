@@ -34,13 +34,6 @@ class MongoLoader:
     pass
 
 
-#     loadfrommongo(collection)
-#         берем докусенты
-#     читаем их
-# переводим в фреймы
-# засовываем их в обхекты классов тредрепорт
-
-
 class MongoDumper:
     def __init__(self):
         pass
@@ -51,11 +44,11 @@ class MongoDumper:
         collection = database.Mongo.create_collection(collection_name)
 
         for sample_name, sample in class_object.items():
-            print(type(sample))
+            # print(type(sample))
             tmp = sample.to_json(force_ascii=False, orient="index", indent=4)
             # print(type(tmp))
-            print(json.loads(tmp))
-            print('\n')
+            # print(json.loads(tmp))
+            # print('\n')
             collection_id = database.Mongo.add_doc(collection, json.loads(tmp))
 
         print("ADD to database {}.".format(collection_name))
