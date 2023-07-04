@@ -2,29 +2,9 @@ import pandas as pd
 
 
 class Basic:
-    def __init__(self, path, sheet_name):
-        self.path = path
-        self.sheet_name = sheet_name
-        self.table = pd.DataFrame()
-        self.unique = 0
+    def __init__(self):
+        pass
 
-    def openfile(self):
-        self.table = pd.read_excel(self.path, sheet_name=self.sheet_name)
-        print("openfile is done!")
-
-    def writefile(self, filename, samples: dict):
-        with pd.ExcelWriter(filename) as writer:
-            for sample_name, sample in samples.items():
-                sample.to_excel(writer, sheet_name=sample_name)
-        print("writefile is done!")
-
-    # create a sapmle with unique field and count it
-    def unique_sample(self):
-        self.unique = self.table.nunique()
-
-        return self.unique
-
-    # description in work
     @staticmethod
     def collapse(group, dup_name, out_column_name):
         rows_count = len(group.index)

@@ -1,39 +1,41 @@
 import basic
 import pandas as pd
 import numpy as np
-
-# sheet_name_ = 'list1'
-#
-# path_all = [
-#             '/Users/dmitrybaraboshkin/Documents/работа_ИБ/for_analysis_0207/input_reports/program_versions_0207.xlsx',
-#             '/Users/dmitrybaraboshkin/Documents/работа_ИБ/for_analysis_1227/input_reports/program_versions_1227.xlsx']
-#
-# save_path_all = [
-#     '/Users/dmitrybaraboshkin/Documents/работа_ИБ/for_analysis_0207/output_reports/REPORT_program_versions_0207.xlsx',
-#     '/Users/dmitrybaraboshkin/Documents/работа_ИБ/for_analysis_1227/output_reports/REPORT_program_versions_1227.xlsx']
+import save
 
 
-class ProgramVersions(basic.Basic):
+class ProgramVersions:
+    col_name = 'program_versions_collection'
 
     def __init__(self, path, sheet_name):
+        self.path = path
+        self.sheet_name = sheet_name
         self.program_versions = 0
         self.updates = 0
-        super().__init__(path, sheet_name)
+        self.unique = 0
+        self.open_obj = save.ExcelLoader(self.path, self.sheet_name)
+        self.dict = {}
 
-    def save_result(self, filename):
-        dict_unique = {"unique_sample": self.unique,
-                       "program_versions_sample": self.program_versions,
-                       "updates_sample": self.updates}
-        self.writefile(filename, dict_unique)
+    def save_result(self, save_path):
+        self.dict = {
+            "unique_sample": self.unique,
+            "program_versions_sample": self.program_versions,
+            "updates_sample": self.updates}
+        save.ExcelDumper.write_file(save_path, self.dict)
 
     def all_samples_program_versions(self):
-        self.openfile()
+        self.open_obj.open_file()
         self.unique_sample()
         self.program_versions_sample()
         self.updates_sample()
 
+    def unique_sample(self):
+        self.unique = self.open_obj.table.nunique()
+
+        return self.unique
+
     def program_versions_sample(self):
-        self.program_versions = pd.DataFrame(data=self.table[
+        self.program_versions = pd.DataFrame(data=self.open_obj.table[
             ['Программа', 'Номер версии', 'Установленные обновления']])
         self.program_versions = self.program_versions.groupby([
             'Программа'])[['Номер версии', 'Установленные обновления']].value_counts()
@@ -51,12 +53,10 @@ class ProgramVersions(basic.Basic):
         # имя подсчитываемого поля
         out_column = 'Кол-во установленных обновлений'
 
-        out = self.table[columns_list].groupby([groupby_column], group_keys=False).apply(
+        out = self.open_obj.table[columns_list].groupby([groupby_column], group_keys=False).apply(
             lambda x: basic.Basic.collapse(x, groupby_column, out_column))
 
         self.updates = out.sort_values(by=[out_column], ascending=False)
-        self.updates.index = np.arange(1, len(self.updates) + 1) # new index
+        self.updates.index = np.arange(1, len(self.updates) + 1)  # new index
 
         return self.updates
-
-
