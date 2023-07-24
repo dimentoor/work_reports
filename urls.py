@@ -27,7 +27,11 @@ th_open_path = [
     # pathlib.Path(pathlib.Path.home(), work_path, 'for_analysis_0609', 'input_reports', 'threats_0609.xlsx'),
     # pathlib.Path(pathlib.Path.home(), work_path, 'for_analysis_0616', 'input_reports', 'threats_0616.xlsx'),
     # pathlib.Path(pathlib.Path.home(), work_path, 'for_analysis_0623', 'input_reports', 'threats_0623.xlsx'),
-    pathlib.Path(pathlib.Path.home(), work_path, 'for_analysis_0630', 'input_reports', 'threats_0630.xlsx')]
+    # pathlib.Path(pathlib.Path.home(), work_path, 'for_analysis_0630', 'input_reports', 'threats_0630.xlsx'),
+    # pathlib.Path(pathlib.Path.home(), work_path, 'for_analysis_0707', 'input_reports', 'threats_0707.xlsx'),
+    # pathlib.Path(pathlib.Path.home(), work_path, 'for_analysis_0714', 'input_reports', 'threats_0714.xlsx'),
+    pathlib.Path(pathlib.Path.home(), work_path, 'for_analysis_0721', 'input_reports', 'threats_07(11-18).xlsx'),
+    pathlib.Path(pathlib.Path.home(), work_path, 'for_analysis_0721', 'input_reports', 'threats_0721.xlsx')]
 
 th_save_path = [
     # pathlib.Path(pathlib.Path.home(), work_path, 'for_analysis_1227', 'output_reports',
@@ -68,8 +72,16 @@ th_save_path = [
     #              'REPORT_threats_0616.xlsx'),
     # pathlib.Path(pathlib.Path.home(), work_path, 'for_analysis_0623', 'output_reports',
     #              'REPORT_threats_0623.xlsx'),
-    pathlib.Path(pathlib.Path.home(), work_path, 'for_analysis_0630', 'output_reports',
-                 'REPORT_threats_0630.xlsx')]
+    # pathlib.Path(pathlib.Path.home(), work_path, 'for_analysis_0630', 'output_reports',
+    #              'REPORT_threats_0630.xlsx'),
+    # pathlib.Path(pathlib.Path.home(), work_path, 'for_analysis_0707', 'output_reports',
+    #              'REPORT_threats_0707.xlsx'),
+    # pathlib.Path(pathlib.Path.home(), work_path, 'for_analysis_0714', 'output_reports',
+    #              'REPORT_threats_0714.xlsx'),
+    pathlib.Path(pathlib.Path.home(), work_path, 'for_analysis_0721', 'output_reports',
+                 'REPORT_threats_07(11-18).xlsx'),
+    pathlib.Path(pathlib.Path.home(), work_path, 'for_analysis_0721', 'output_reports',
+                 'REPORT_threats_0721.xlsx')]
 
 # program_versions
 pv_sheet_name = 'list1'
@@ -93,7 +105,11 @@ pv_open_path = [
     # pathlib.Path(pathlib.Path.home(), work_path, 'for_analysis_0609', 'input_reports', 'program_versions_0609.xlsx'),
     # pathlib.Path(pathlib.Path.home(), work_path, 'for_analysis_0616', 'input_reports', 'program_versions_0616.xlsx'),
     # pathlib.Path(pathlib.Path.home(), work_path, 'for_analysis_0623', 'input_reports', 'program_versions_0623.xlsx'),
-    pathlib.Path(pathlib.Path.home(), work_path, 'for_analysis_0630', 'input_reports', 'program_versions_0630.xlsx')]
+    # pathlib.Path(pathlib.Path.home(), work_path, 'for_analysis_0630', 'input_reports', 'program_versions_0630.xlsx'),
+    # pathlib.Path(pathlib.Path.home(), work_path, 'for_analysis_0707', 'input_reports', 'program_versions_0707.xlsx'),
+    pathlib.Path(pathlib.Path.home(), work_path, 'for_analysis_0721', 'input_reports',
+                 'program_versions_07(11-18).xlsx'),
+    pathlib.Path(pathlib.Path.home(), work_path, 'for_analysis_0721', 'input_reports', 'program_versions_0721.xlsx')]
 
 pv_save_path = [
     # pathlib.Path(pathlib.Path.home(), work_path, 'for_analysis_1227', 'output_reports',
@@ -132,8 +148,14 @@ pv_save_path = [
     #              'REPORT_program_versions_0616.xlsx'),
     # pathlib.Path(pathlib.Path.home(), work_path, 'for_analysis_0623', 'output_reports',
     #              'REPORT_program_versions_0623.xlsx'),
-    pathlib.Path(pathlib.Path.home(), work_path, 'for_analysis_0630', 'output_reports',
-                 'REPORT_program_versions_0630.xlsx')]
+    # pathlib.Path(pathlib.Path.home(), work_path, 'for_analysis_0630', 'output_reports',
+    #              'REPORT_program_versions_0630.xlsx'),
+    # pathlib.Path(pathlib.Path.home(), work_path, 'for_analysis_0707', 'output_reports',
+    #              'REPORT_program_versions_0707.xlsx'),
+    pathlib.Path(pathlib.Path.home(), work_path, 'for_analysis_0721', 'output_reports',
+                 'REPORT_program_versions_07(11-18).xlsx'),
+    pathlib.Path(pathlib.Path.home(), work_path, 'for_analysis_0721', 'output_reports',
+                 'REPORT_program_versions_0721.xlsx')]
 
 # antivirus_bases
 ab_sheet_name = 'list1'
@@ -158,7 +180,12 @@ ab_open_path = [
     # pathlib.Path(pathlib.Path.home(), work_path, 'for_analysis_0609', 'input_reports', 'antivirus_bases_0609.xlsx'),
     # pathlib.Path(pathlib.Path.home(), work_path, 'for_analysis_0616', 'input_reports', 'antivirus_bases_0616.xlsx'),
     # pathlib.Path(pathlib.Path.home(), work_path, 'for_analysis_0623', 'input_reports', 'antivirus_bases_0623.xlsx'),
-    pathlib.Path(pathlib.Path.home(), work_path, 'for_analysis_0630', 'input_reports', 'antivirus_bases_0630.xlsx')]
+    # pathlib.Path(pathlib.Path.home(), work_path, 'for_analysis_0630', 'input_reports', 'antivirus_bases_0630.xlsx'),
+    # pathlib.Path(pathlib.Path.home(), work_path, 'for_analysis_0707', 'input_reports', 'antivirus_bases_0707.xlsx'),
+    # pathlib.Path(pathlib.Path.home(), work_path, 'for_analysis_0714', 'input_reports', 'antivirus_bases_0714.xlsx'),
+    pathlib.Path(pathlib.Path.home(), work_path, 'for_analysis_0721', 'input_reports',
+                 'antivirus_bases_07(11-18).xlsx'),
+    pathlib.Path(pathlib.Path.home(), work_path, 'for_analysis_0721', 'input_reports', 'antivirus_bases_0721.xlsx')]
 
 ab_save_path = [
     # pathlib.Path(pathlib.Path.home(), work_path, 'for_analysis_1227', 'output_reports',
@@ -199,8 +226,16 @@ ab_save_path = [
     #              'REPORT_antivirus_bases_0616.xlsx'),
     # pathlib.Path(pathlib.Path.home(), work_path, 'for_analysis_0623', 'output_reports',
     #              'REPORT_antivirus_bases_0623.xlsx'),
-    pathlib.Path(pathlib.Path.home(), work_path, 'for_analysis_0630', 'output_reports',
-                 'REPORT_antivirus_bases_0630.xlsx')]
+    # pathlib.Path(pathlib.Path.home(), work_path, 'for_analysis_0630', 'output_reports',
+    #              'REPORT_antivirus_bases_0630.xlsx'),
+    # pathlib.Path(pathlib.Path.home(), work_path, 'for_analysis_0707', 'output_reports',
+    #              'REPORT_antivirus_bases_0707.xlsx'),
+    # pathlib.Path(pathlib.Path.home(), work_path, 'for_analysis_0714', 'output_reports',
+    #              'REPORT_antivirus_bases_0714.xlsx'),
+    pathlib.Path(pathlib.Path.home(), work_path, 'for_analysis_0721', 'output_reports',
+                 'REPORT_antivirus_bases_07(11-18).xlsx'),
+    pathlib.Path(pathlib.Path.home(), work_path, 'for_analysis_0721', 'output_reports',
+                 'REPORT_antivirus_bases_0721.xlsx')]
 
 # network_attacks
 na_sheet_name = 'list1'
