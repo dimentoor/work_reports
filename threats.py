@@ -3,6 +3,9 @@ import save
 import pandas as pd
 import numpy as np
 
+# threats
+th_sheet_name = 'list1'
+
 
 class ThreatsReport:
     col_name = 'threats_collection'
@@ -39,11 +42,8 @@ class ThreatsReport:
 
     def unique_sample(self):
         self.unique = self.open_obj.table.nunique()
-
         return self.unique
 
-    # count  Кол-во угроз for each user (how does it work? or not)
-    # select ONLY ONE groupby column in all functions
     def black_list_sample(self):
         # по каким полям смотрим
         columns_list = ['Учетная запись', 'IP-адрес']
@@ -57,10 +57,8 @@ class ThreatsReport:
 
         self.black_list = out.sort_values(by=[out_column], ascending=False)
         self.black_list.index = np.arange(1, len(self.black_list) + 1)  # new index
-
         return self.black_list
 
-    # select ONLY ONE groupby column in all functions
     def users_sample(self):
         self.users = pd.DataFrame(data=self.open_obj.table[
             ['Устройство', 'Учетная запись', 'IP-адрес',
@@ -68,7 +66,6 @@ class ThreatsReport:
         self.users = self.users.groupby(
             ['Учетная запись', 'Устройство'])[
             ['IP-адрес', 'Обнаруженный объект', 'Тип объекта']].value_counts()
-
         return self.users
 
     def threat_types_sample(self):
@@ -76,7 +73,6 @@ class ThreatsReport:
             ['Тип объекта', 'Обнаруженный объект']])
         self.threat_types = self.threat_types.groupby([
             'Тип объекта'])[['Обнаруженный объект']].value_counts()
-
         return self.threat_types
 
     def types_sample(self):
@@ -92,6 +88,4 @@ class ThreatsReport:
 
         self.types = out.sort_values(by=[out_column], ascending=False)
         self.types.index = np.arange(1, len(self.types) + 1)  # new index
-        # self.types_num = self.types.drop(columns=['Тип объекта'], axis=1)
-
         return self.types

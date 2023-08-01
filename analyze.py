@@ -9,14 +9,11 @@ class Analyzer:
     col_name_ab = 'dynamic_collection_ab'
 
     def __init__(self):
-        # self.path = path
-        # self.sheet_name = sheet_name
         self.dblack_list = 0
         self.res_df = 0
         self.dstatuses = 0
         self.dtypes = 0
         self.dtypes_summ = 0
-        # self.open_obj = save.ExcelLoader(self.path, self.sheet_name)
         self.dict = {}
 
     def save_result_th(self, save_path):
@@ -61,7 +58,6 @@ class Analyzer:
 
         # persistent_violators
         # self.res_df.to_excel(urls.save_path_unique, sheet_name='unique_count')  # rework
-
         return self.res_df
 
     # summed_threats_blist
@@ -105,7 +101,6 @@ class Analyzer:
             lambda x: basic.Basic.collapse_with_sum(x, groupby_column, out_column))
         self.dtypes_summ = self.dtypes_summ.sort_values(by=[out_column], ascending=False)
         self.dtypes_summ.index = np.arange(1, len(self.dtypes_summ) + 1)  # new index
-
         return self.dtypes_summ
 
     # few weeks in one sheet for diagram || should be reworked | have mistakes
@@ -123,7 +118,6 @@ class Analyzer:
         self.dtypes = pd.concat(objects_list, axis=1, ignore_index=True)
         self.dtypes["result"] = self.dtypes.sum(axis=1, numeric_only=True)
         # print(test)
-
         return self.dtypes
 
     # def ab_statuses_summ(self, report_list):  # summ for the selected period
@@ -158,5 +152,4 @@ class Analyzer:
 
         self.dstatuses = pd.concat(objects_list, axis=1, ignore_index=True)
         self.dstatuses["result"] = self.dstatuses.sum(axis=1, numeric_only=True)
-
         return self.dstatuses

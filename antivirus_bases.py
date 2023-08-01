@@ -3,6 +3,9 @@ import pandas as pd
 import numpy as np
 import save
 
+# antivirus_bases
+ab_sheet_name = 'list1'
+
 
 class AntivirusBases:
     col_name = 'antivirus_bases_collection'

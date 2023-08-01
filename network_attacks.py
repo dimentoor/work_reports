@@ -3,6 +3,9 @@ import pandas as pd
 import numpy as np
 import save
 
+# network_attacks
+na_sheet_name = 'list1'
+
 
 class NetworkAttacks:
     col_name = 'network_attacks_collection'
