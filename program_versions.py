@@ -2,13 +2,14 @@ import basic
 import pandas as pd
 import numpy as np
 import save
+from datetime import datetime
 
 # program_versions
 pv_sheet_name = 'list1'
 
 
 class ProgramVersions:
-    col_name = 'program_versions_collection'
+    # col_name = 'pv_' + datetime.now().strftime("%Y-%m-%d/%S")
 
     def __init__(self, path, sheet_name):
         self.path = path
@@ -20,10 +21,6 @@ class ProgramVersions:
         self.dict = {}
 
     def save_result(self, save_path):
-        self.dict = {
-            "unique_sample": self.unique,
-            "program_versions_sample": self.program_versions,
-            "updates_sample": self.updates}
         save.ExcelDumper.write_file(save_path, self.dict)
 
     def all_samples_program_versions(self):
@@ -31,6 +28,10 @@ class ProgramVersions:
         self.unique_sample()
         self.program_versions_sample()
         self.updates_sample()
+        self.dict = {
+            "unique_sample": self.unique,
+            "program_versions_sample": self.program_versions,
+            "updates_sample": self.updates}
 
     def unique_sample(self):
         self.unique = self.open_obj.table.nunique()

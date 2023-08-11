@@ -2,13 +2,14 @@ import basic
 import pandas as pd
 import numpy as np
 import save
+from datetime import datetime
 
 # antivirus_bases
 ab_sheet_name = 'list1'
 
 
 class AntivirusBases:
-    col_name = 'antivirus_bases_collection'
+    # col_name = 'ab_' + datetime.now().strftime("%Y-%m-%d/%S")
 
     def __init__(self, path, sheet_name):
         self.path = path
@@ -23,12 +24,6 @@ class AntivirusBases:
         self.dict = {}
 
     def save_result(self, save_path):
-        self.dict = {
-            "unique_sample": self.unique,
-            "program_version_status_sample": self.pvs_sample,
-            "users_statuses_sample": self.users_statuses,
-            "programs_sample": self.programs,
-            "statuses_sample": self.statuses}
         save.ExcelDumper.write_file(save_path, self.dict)
 
     def all_samples_antivirus_bases(self):
@@ -38,6 +33,12 @@ class AntivirusBases:
         self.programs_sample()
         self.statuses_sample()
         self.users_statuses_sample()
+        self.dict = {
+            "unique_sample": self.unique,
+            "program_version_status_sample": self.pvs_sample,
+            "users_statuses_sample": self.users_statuses,
+            "programs_sample": self.programs,
+            "statuses_sample": self.statuses}
 
     def unique_sample(self):
         self.unique = self.open_obj.table.nunique()

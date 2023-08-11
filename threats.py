@@ -2,13 +2,14 @@ import basic
 import save
 import pandas as pd
 import numpy as np
+from datetime import datetime
 
 # threats
 th_sheet_name = 'list1'
 
 
 class ThreatsReport:
-    col_name = 'threats_collection'
+    # col_name = 'th_' + datetime.now().strftime("%Y-%m-%d/%S")
 
     def __init__(self, path, sheet_name):
         self.path = path
@@ -21,14 +22,9 @@ class ThreatsReport:
         self.unique = 0
         self.open_obj = save.ExcelLoader(self.path, self.sheet_name)
         self.dict = {}
+        # self.black_list_parts = 0
 
     def save_result(self, save_path):
-        self.dict = {
-            "unique_sample": self.unique,
-            "users_sample": self.users,
-            "black_list_sample": self.black_list,
-            "threat_types_sample": self.threat_types,
-            "types_sample": self.types}
         save.ExcelDumper.write_file(save_path, self.dict)
 
     # start all functions
@@ -39,6 +35,12 @@ class ThreatsReport:
         self.black_list_sample()
         self.threat_types_sample()
         self.types_sample()
+        self.dict = {
+            "unique_sample": self.unique,
+            "users_sample": self.users,
+            "black_list_sample": self.black_list,
+            "threat_types_sample": self.threat_types,
+            "types_sample": self.types}
 
     def unique_sample(self):
         self.unique = self.open_obj.table.nunique()
@@ -57,6 +59,8 @@ class ThreatsReport:
 
         self.black_list = out.sort_values(by=[out_column], ascending=False)
         self.black_list.index = np.arange(1, len(self.black_list) + 1)  # new index
+        # self.black_list_parts = self.black_list.drop(columns=['Учетная запись', 'IP-адрес'], axis=1)
+
         return self.black_list
 
     def users_sample(self):
@@ -86,6 +90,11 @@ class ThreatsReport:
         out = self.open_obj.table[columns_list].groupby([groupby_column], group_keys=False).apply(
             lambda x: basic.Basic.collapse(x, groupby_column, out_column))
 
-        self.types = out.sort_values(by=[out_column], ascending=False)
+        # self.types = out.sort_values(by=[out_column], ascending=False)
+        self.types = out
         self.types.index = np.arange(1, len(self.types) + 1)  # new index
+        # self.types = self.types.set_index('Тип объекта')
+        # print(self.types)
+        self.types_num = self.types.drop(columns=['Тип объекта'], axis=1)
+
         return self.types

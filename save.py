@@ -14,8 +14,6 @@ class ExcelLoader:
         self.table = pd.read_excel(self.open_path, sheet_name=self.sheet_name)
         print("Opened {}.".format(self.open_path))
 
-    # read file
-
 
 class ExcelDumper:
     def __init__(self, save_path):
@@ -40,7 +38,6 @@ class MongoDumper:
 
     @staticmethod
     def df_to_json(class_object, collection_name):
-        # mongo_obj = database.Mongo()
         collection = database.Mongo.create_collection(collection_name)
 
         for sample_name, sample in class_object.items():

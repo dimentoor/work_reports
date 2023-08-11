@@ -2,13 +2,13 @@ import basic
 import pandas as pd
 import numpy as np
 import save
-
+from datetime import datetime
 # network_attacks
 na_sheet_name = 'list1'
 
 
 class NetworkAttacks:
-    col_name = 'network_attacks_collection'
+    # col_name = 'na_' + datetime.now().strftime("%Y-%m-%d/%S")
 
     def __init__(self, path, sheet_name):
         self.path = path
