@@ -289,7 +289,8 @@ class App(tk.Tk):
         self.save_btn.configure(state='disabled')
         self.database_btn.configure(state='disabled')
         self.skip_btn.configure(state='disabled')
-        self.analyze_btn.configure(state='normal')
+        self.analyze_btn.configure(state='disabled')
+        self.dynamic_btn.configure(state='normal')
 
         for radio in self.radios:
             radio.deselect()
@@ -329,8 +330,6 @@ class App(tk.Tk):
             self.analyze_btn.configure(state='normal')
             for radio in self.radios:
                 radio.configure(state='normal')
-
-        self.analyze_btn.configure(state='disabled')
 
     def report_create(self):
         if self.dict_values() == 1:

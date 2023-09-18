@@ -2,14 +2,12 @@ import basic
 import pandas as pd
 import numpy as np
 import save
-from datetime import datetime
 
 # antivirus_bases
 ab_sheet_name = 'list1'
 
 
 class AntivirusBases:
-    # col_name = 'ab_' + datetime.now().strftime("%Y-%m-%d/%S")
 
     def __init__(self, path, sheet_name):
         self.path = path

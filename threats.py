@@ -2,14 +2,12 @@ import basic
 import save
 import pandas as pd
 import numpy as np
-from datetime import datetime
 
 # threats
 th_sheet_name = 'list1'
 
 
 class ThreatsReport:
-    # col_name = 'th_' + datetime.now().strftime("%Y-%m-%d/%S")
 
     def __init__(self, path, sheet_name):
         self.path = path

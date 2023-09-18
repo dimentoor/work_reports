@@ -5,9 +5,6 @@ import numpy as np
 
 
 class Analyzer:
-    # col_name_th = 'dynamic_collection_th'
-    # self.current_date.strftime("%Y-%m-%d-%H.%M.%S"),
-    # col_name_ab = 'dynamic_collection_ab'
 
     def __init__(self):
         self.dblack_list = 0
@@ -69,8 +66,6 @@ class Analyzer:
         self.res_df = df_value_counts[df_value_counts['Количество вхождений'] >= 4]
         self.res_df.index = np.arange(1, len(self.res_df) + 1)  # new index
 
-        # persistent_violators
-        # self.res_df.to_excel(urls.save_path_unique, sheet_name='unique_count')  # rework
         return self.res_df
 
     # summed_threats_blist
@@ -95,7 +90,6 @@ class Analyzer:
         self.dblack_list = self.dblack_list.sort_values(by=[out_column], ascending=False)
         self.dblack_list.index = np.arange(1, len(self.dblack_list) + 1)  # new index
 
-        # summed threats black list
         return self.dblack_list
 
     # def th_dblack_list_parts(self, report_list):
@@ -130,7 +124,7 @@ class Analyzer:
         self.dtypes_summ.index = np.arange(1, len(self.dtypes_summ) + 1)  # new index
         return self.dtypes_summ
 
-    # few weeks in one sheet for diagram || should be reworked | have mistakes
+    # few weeks in one sheet for diagram || should be reworked | have mistakes in some situations
     def th_dtypes_part(self, report_list):
         objects_list = []
         i = 0
