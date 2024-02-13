@@ -5,6 +5,7 @@ from tkinter import messagebox as mbox
 import copy
 
 import graphics
+import installed_software
 import threats
 import program_versions
 import antivirus_bases
@@ -216,9 +217,10 @@ class App(tk.Tk):
     antivirus_bases_objects = list()
     network_attacks_objects = list()
     program_versions_objects = list()
+    installed_software_objects = list()  # new
 
-    dynamic_th = analyze.Analyzer()
-    dynamic_ab = analyze.Analyzer()
+    # dynamic_th = analyze.Analyzer()
+    # dynamic_ab = analyze.Analyzer()
 
     def __init__(self, dict_report):
         super().__init__()
@@ -284,6 +286,7 @@ class App(tk.Tk):
         self.antivirus_bases_objects.clear()
         self.network_attacks_objects.clear()
         self.program_versions_objects.clear()
+        self.installed_software_objects.clear()  # new
 
         self.analyze_btn.configure(state='disabled')
         self.save_btn.configure(state='disabled')
@@ -373,6 +376,15 @@ class App(tk.Tk):
             # (rework) rewrite like same as above
             for obj in range(len(App.network_attacks_objects)):
                 App.network_attacks_objects[obj].all_samples_network_attack()
+
+        elif self.dict_values() == 5:  # new
+            # INSTALLED_SOFTWARE
+            for path in self.urls_list_open:
+                App.installed_software_objects.append(installed_software.InstalledSoftware(
+                    path, installed_software.is_sheet_name))
+            # (rework) rewrite like same as above
+            for obj in range(len(App.installed_software_objects)):
+                App.installed_software_objects[obj].all_samples_installed_software()
         else:
             output = "Invalid selection"
             print(output)
@@ -408,6 +420,10 @@ class App(tk.Tk):
         elif self.dict_values() == 4:
             for obj in range(len(App.network_attacks_objects)):
                 App.network_attacks_objects[obj].save_result(self.urls_list_save[obj])
+
+        elif self.dict_values() == 5:
+            for obj in range(len(App.installed_software_objects)):
+                App.installed_software_objects[obj].save_result(self.urls_list_save[obj])
         else:
             output = "Invalid selection"
             print(output)
@@ -436,6 +452,11 @@ class App(tk.Tk):
         elif self.dict_values() == 4:
             for obj in range(len(App.network_attacks_objects)):
                 save.MongoDumper.df_to_json(App.network_attacks_objects[obj].dict,
+                                            '{}'.format(self.filenames_list[obj][0:len(self.filenames_list[obj]) - 5])
+                                            + "_" + datetime.now().strftime("/%S"))
+        elif self.dict_values() == 5:
+            for obj in range(len(App.installed_software_objects)):
+                save.MongoDumper.df_to_json(App.installed_software_objects[obj].dict,
                                             '{}'.format(self.filenames_list[obj][0:len(self.filenames_list[obj]) - 5])
                                             + "_" + datetime.now().strftime("/%S"))
         else:

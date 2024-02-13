@@ -43,6 +43,7 @@ class AntivirusBases:
 
         return self.unique
 
+    # uninformative
     def program_version_status_sample(self):
         self.pvs_sample = pd.DataFrame(data=self.open_obj.table[
             ['Программа', 'Номер версии', 'Статус антивирусных баз']])
@@ -59,6 +60,7 @@ class AntivirusBases:
 
         return self.users_statuses
 
+    # uninformative
     def programs_sample(self):
         # по каким полям смотрим
         columns_list = ['Программа']
