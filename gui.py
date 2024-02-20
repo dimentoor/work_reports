@@ -114,8 +114,8 @@ class Form2(tk.Toplevel):
                 self.filenames_list.append(names_)
 
                 self.path_list.insert(path, self.filenames_list[path])
-        self.urls_list_save.append(self.filenames_list[0][0:len(
-            self.filenames_list[0]) - 5] + "-" + self.filenames_list[-1][-9:-5])
+        # self.urls_list_save.append(self.filenames_list[0][0:len(
+        #     self.filenames_list[0]) - 5] + "-" + self.filenames_list[-1][-9:-5])
 
         print(self.filenames_list)
         print(self.reports_indexes)  #
@@ -123,6 +123,8 @@ class Form2(tk.Toplevel):
         if len(self.filenames_list) == 0:
             self.error_message("Open files", "Please select a file")
         else:
+            self.urls_list_save.append(self.filenames_list[0][0:len(
+                self.filenames_list[0]) - 5] + "-" + self.filenames_list[-1][-9:-5])
             self.info_message("Open files", "Files successfully opened")
             self.analyze_btn.configure(state='normal')
             for radio in self.radios:

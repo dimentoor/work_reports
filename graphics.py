@@ -109,3 +109,4 @@ class Graphics:
         df = df.drop(columns=[col_name], axis=1)
 
         return df
+

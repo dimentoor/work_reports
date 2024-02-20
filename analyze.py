@@ -1,4 +1,5 @@
 import basic
+import gui
 import save
 import pandas as pd
 import numpy as np
@@ -125,20 +126,16 @@ class Analyzer:
         return self.dtypes_summ
 
     # few weeks in one sheet for diagram || should be reworked | have mistakes in some situations
+    # берется первая таблица полностью, остальные добавляют только числа, позиционка последующих таблиц не учитывается
     def th_dtypes_part(self, report_list):
-        objects_list = []
         i = 0
-        for report in report_list:
-            if i == 0:
-                objects_list.append(report.types)
-                i += 1
-            else:
-                objects_list.append(report.types_num)
-                # objects_list.append(report.types)
+        merged_df = report_list[0].types
+        for report in report_list[1:]:
+            merged_df = pd.merge(merged_df, report.types, on='Тип объекта', how='outer', suffixes=('_x', f'_y{i}'))
+            # suffixes=[index for index in gui.Form2.reports_indexes])
+        merged_df = merged_df.fillna(0)
+        self.dtypes = merged_df
 
-        self.dtypes = pd.concat(objects_list, axis=1, ignore_index=True)
-        # self.dtypes["result"] = self.dtypes.sum(axis=1, numeric_only=True)
-        # print(test)
         return self.dtypes
 
     # def ab_statuses_summ(self, report_list):  # summ for the selected period

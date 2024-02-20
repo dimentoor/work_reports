@@ -38,7 +38,7 @@ class InstalledSoftware:
 
         test_df = self.software
 
-        print(test_df.count())
+        print(test_df.count())  # check
         # print(test_df)
 
         test_df['Программа'] = test_df['Программа'].astype(str)
@@ -63,7 +63,7 @@ class InstalledSoftware:
 
         # print(test_df.count())
         self.software = test_df
-        print(self.software.count())
+        print(self.software.count())  # check
 
         return self.software
 

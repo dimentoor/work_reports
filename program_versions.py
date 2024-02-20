@@ -1,5 +1,6 @@
 import basic
 import pandas as pd
+import numpy as np
 import save
 import locale
 from datetime import datetime, timedelta
@@ -33,7 +34,6 @@ class ProgramVersions:
         self.dict = {
             "unique_sample": self.unique,
             "program_versions_sample": self.program_versions,
-            # "updates_sample": self.updates}
             "alive_sample": self.alive,
             "filtered_alive": self.filtered_df}
 
@@ -54,20 +54,25 @@ class ProgramVersions:
         locale.setlocale(locale.LC_TIME, 'ru_RU.UTF-8')
 
         self.alive = pd.DataFrame(data=self.open_obj.table[
-            ['Устройство', 'Последнее появление в сети']])
+            ['Группа', 'Устройство', 'Последнее появление в сети']])
 
         self.alive['time'] = self.alive[
             'Последнее появление в сети'].apply(lambda x: datetime.strptime(x, '%d %B %Y г. %H:%M:%S'))
         self.alive = self.alive.drop('Последнее появление в сети', axis=1)
 
         self.alive = self.alive.sort_values(by='time')  # rename column "time"
+        self.alive.index = np.arange(1, len(self.alive) + 1)  # new index
+
+        # check info
+        # current_date = datetime.now()
+        # self.alive['test'] = (current_date - self.alive['time']).dt.days
 
         current_date = datetime.now()
+
         self.filtered_df = self.alive[(current_date - self.alive['time']).dt.days >= 7]  # >=7 days?
+        self.filtered_df.index = np.arange(1, len(self.filtered_df) + 1)  # new index
 
-        # print(self.filtered_df)
-
-        return self.alive
+        return self.filtered_df
 
     # def updates_sample(self):
     #     # self.updates = pd.DataFrame(data=self.table[
@@ -87,3 +92,4 @@ class ProgramVersions:
     #     self.updates.index = np.arange(1, len(self.updates) + 1)  # new index
     #
     #     return self.updates
+
