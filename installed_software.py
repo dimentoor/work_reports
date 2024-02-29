@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import save
 from fuzzywuzzy import fuzz
 
@@ -28,8 +29,9 @@ class InstalledSoftware:
             "filtered_software": self.software}
 
     def unique_sample(self):
-        self.unique = self.open_obj.table.nunique()
-        print(self.unique)
+        self.unique = self.open_obj.table.nunique().reset_index().rename(columns={'index': 'Поля', 0: 'Количество'})
+        self.unique.index = np.arange(1, len(self.unique) + 1)  # new index
+
         return self.unique
 
     def filtered_software(self):
@@ -59,11 +61,10 @@ class InstalledSoftware:
                         index_j += 1
 
         test_df = test_df.drop(indexes_to_remove).reset_index(drop=True)
-        print("!!!!!!!!")
 
         # print(test_df.count())
         self.software = test_df
-        print(self.software.count())  # check
+        # print(self.software.count())  # check
 
         return self.software
 

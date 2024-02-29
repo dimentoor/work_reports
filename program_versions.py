@@ -38,7 +38,8 @@ class ProgramVersions:
             "filtered_alive": self.filtered_df}
 
     def unique_sample(self):
-        self.unique = self.open_obj.table.nunique()
+        self.unique = self.open_obj.table.nunique().reset_index().rename(columns={'index': 'Поля', 0: 'Количество'})
+        self.unique.index = np.arange(1, len(self.unique) + 1)  # new index
 
         return self.unique
 
@@ -46,7 +47,9 @@ class ProgramVersions:
         self.program_versions = pd.DataFrame(data=self.open_obj.table[
             ['Программа', 'Номер версии']])
         self.program_versions = self.program_versions.groupby([
-            'Программа'])[['Номер версии']].value_counts()  # how to delete column " " created by value_counts()?
+            'Программа'])[['Номер версии']].value_counts()
+
+        self.program_versions.name = 'Count'
 
         return self.program_versions
 
@@ -60,7 +63,7 @@ class ProgramVersions:
             'Последнее появление в сети'].apply(lambda x: datetime.strptime(x, '%d %B %Y г. %H:%M:%S'))
         self.alive = self.alive.drop('Последнее появление в сети', axis=1)
 
-        self.alive = self.alive.sort_values(by='time')  # rename column "time"
+        self.alive = self.alive.sort_values(by='time')
         self.alive.index = np.arange(1, len(self.alive) + 1)  # new index
 
         # check info
@@ -73,23 +76,4 @@ class ProgramVersions:
         self.filtered_df.index = np.arange(1, len(self.filtered_df) + 1)  # new index
 
         return self.filtered_df
-
-    # def updates_sample(self):
-    #     # self.updates = pd.DataFrame(data=self.table[
-    #     #     ['Установленные обновления']].value_counts().to_frame())
-    #
-    #     # по каким полям смотрим
-    #     columns_list = ['Установленные обновления']
-    #     # по какому полю группируем
-    #     groupby_column = 'Установленные обновления'
-    #     # имя подсчитываемого поля
-    #     out_column = 'Кол-во установленных обновлений'
-    #
-    #     out = self.open_obj.table[columns_list].groupby([groupby_column], group_keys=False).apply(
-    #         lambda x: basic.Basic.collapse(x, groupby_column, out_column))
-    #
-    #     self.updates = out.sort_values(by=[out_column], ascending=False)
-    #     self.updates.index = np.arange(1, len(self.updates) + 1)  # new index
-    #
-    #     return self.updates
 

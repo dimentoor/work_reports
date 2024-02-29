@@ -28,6 +28,20 @@ class ExcelDumper:
         print("Wrote to {}.".format(filename))
 
 
+class WordDumper:
+    # def __init__(self, save_path):
+    #     self.save_path = save_path
+    #
+    # # write file
+    # @staticmethod
+    # def write_file(filename, samples: dict):
+    #     with pd.ExcelWriter(filename) as writer:
+    #         for sample_name, sample in samples.items():
+    #             sample.to_excel(writer, sheet_name=sample_name)
+    #     print("Wrote to {}.".format(filename))
+    pass
+
+
 class MongoLoader:
     pass
 

@@ -6,6 +6,17 @@ import numpy as np
 # threats
 th_sheet_name = 'list1'
 
+threats_weight = {
+    "Вредоносная ссылка": 30,
+    "вредоносные утилиты": 20,
+    "червь": 50,
+    "вирус": 50,
+    "Рекламная программа": 10,
+    "Троянская программа": 40,
+    "Фишинговая ссылка": 40,
+    "другая программа": 20,
+    "неизвестно": 20}
+
 
 class ThreatsReport:
 
@@ -14,6 +25,7 @@ class ThreatsReport:
         self.sheet_name = sheet_name
         self.black_list = 0
         self.users = 0
+        self.weighted_users = 0
         self.threat_types = 0
         self.types = 0
         self.types_num = 0
@@ -24,6 +36,7 @@ class ThreatsReport:
 
     def save_result(self, save_path):
         save.ExcelDumper.write_file(save_path, self.dict)
+        # save word
 
     # start all functions
     def all_samples_threats(self):
@@ -36,14 +49,18 @@ class ThreatsReport:
         self.dict = {
             "unique_sample": self.unique,
             "users_sample": self.users,
+            "weighted_users_sample": self.weighted_users,
             "black_list_sample": self.black_list,
             "threat_types_sample": self.threat_types,
             "types_sample": self.types}
 
     def unique_sample(self):
-        self.unique = self.open_obj.table.nunique()
+        self.unique = self.open_obj.table.nunique().reset_index().rename(columns={'index': 'Поля', 0: 'Количество'})
+        self.unique.index = np.arange(1, len(self.unique) + 1)  # new index
+
         return self.unique
 
+    # can be disabled because of weighted_users_sample -> (threats_count x threats_weight)
     def black_list_sample(self):
         # по каким полям смотрим
         columns_list = ['Учетная запись', 'IP-адрес']
@@ -61,20 +78,39 @@ class ThreatsReport:
 
         return self.black_list
 
-    def users_sample(self):
+    def users_sample(self):  # without 'Обнаруженный объект'
+        # all data
         self.users = pd.DataFrame(data=self.open_obj.table[
             ['Устройство', 'Учетная запись', 'IP-адрес',
              'Обнаруженный объект', 'Тип объекта']])
-        self.users = self.users.groupby(
-            ['Учетная запись', 'Устройство'])[
-            ['IP-адрес', 'Обнаруженный объект', 'Тип объекта']].value_counts()
-        return self.users
+        self.users = self.users.groupby(['Учетная запись', 'Устройство'])[
+            ['IP-адрес', 'Обнаруженный объект', 'Тип объекта']].value_counts()  # type - series
+        # .reset_index(name='Count')  # type - dataframe
+        self.users.name = 'Count'
+
+        # Total_Weighted_Count
+        self.weighted_users = pd.DataFrame(data=self.open_obj.table[
+            ['Учетная запись', 'IP-адрес', 'Тип объекта']])
+        self.weighted_users = self.weighted_users.groupby(
+            ['Учетная запись', 'IP-адрес', 'Тип объекта']).size().reset_index(name='Count')
+        # Добавляем веса угроз
+        self.weighted_users['Threat_Weight'] = self.weighted_users['Тип объекта'].map(threats_weight)
+        self.weighted_users['Weighted_Count'] = self.weighted_users['Count'] * self.weighted_users['Threat_Weight']
+        # Группируем по учетной записи и устройству и суммируем взвешенные счетчики
+        self.weighted_users = self.weighted_users.groupby(['Учетная запись', 'IP-адрес',])['Weighted_Count'].sum().reset_index(
+            name='Total_Weighted_Count')
+        self.weighted_users = self.weighted_users.sort_values(by='Total_Weighted_Count', ascending=False)
+        self.weighted_users.index = np.arange(1, len(self.weighted_users) + 1)  # new index
+
+        return self.weighted_users
 
     def threat_types_sample(self):
         self.threat_types = pd.DataFrame(data=self.open_obj.table[
             ['Тип объекта', 'Обнаруженный объект']])
         self.threat_types = self.threat_types.groupby([
             'Тип объекта'])[['Обнаруженный объект']].value_counts()
+        self.threat_types.name = 'Count'
+
         return self.threat_types
 
     def types_sample(self):
@@ -96,3 +132,4 @@ class ThreatsReport:
         self.types_num = self.types.drop(columns=['Тип объекта'], axis=1)
 
         return self.types
+
