@@ -1,7 +1,9 @@
 import matplotlib.pyplot as plt
+from io import BytesIO
 
 
 class Graphics:
+    graphics_objects = list()
 
     def __init__(self, report_list, check_point, reports_indexes):
         self.check_point = check_point  # dict_values, check type of report
@@ -9,8 +11,12 @@ class Graphics:
 
         self.reports_indexes = reports_indexes
 
+        self.pie_obj = 0
+        self.hist_obj = 0
+
     def clear_state(self):
         self.report_list.clear()
+        self.graphics_objects.clear()
 
     def all_graphics(self):
         self.create_graphics()
@@ -20,8 +26,12 @@ class Graphics:
         for report in self.report_list:
             if self.check_point == 1:
                 # THREATS
+                # self.pie_obj = self.pie_diagram(report.types["Кол-во объектов"], report.types["Тип объекта"])
+                # self.hist_obj = self.hist_diagram(report.types, "Тип объекта", "Кол-во объектов")
                 self.pie_diagram(report.types["Кол-во объектов"], report.types["Тип объекта"])
                 self.hist_diagram(report.types, "Тип объекта", "Кол-во объектов")
+
+                # Graphics.graphics_objects.append()
 
             elif self.check_point == 3:
                 # ANTIVIRUS_BASES
@@ -33,14 +43,25 @@ class Graphics:
         plt.pie(data, labels=labels,
                 autopct='%1.1f%%', shadow=True, startangle=140)
         plt.axis('equal')
-        plt.title("Pie_diagram")
+        plt.title("Pie_diagram")  # add name of report
+        # Сохраняем график в байтовый объект
+        buffer = BytesIO()
+        plt.savefig(buffer, format='png')
+        buffer.seek(0)
         plt.show()
+        # return buffer
 
     @staticmethod
     def hist_diagram(df, labels, data):
         df.plot(kind='bar', x=labels, y=data)
         plt.title("Hist_diagram")
+
+        # Сохраняем график в байтовый объект
+        buffer = BytesIO()
+        plt.savefig(buffer, format='png')
+        buffer.seek(0)
         plt.show()
+        # return buffer
 
     def all_graphics_dynamic(self):
         self.create_graphics_dynamic()
@@ -109,4 +130,3 @@ class Graphics:
         df = df.drop(columns=[col_name], axis=1)
 
         return df
-

@@ -1,6 +1,7 @@
 import pandas as pd
 import json
 import database
+import docx
 
 
 class ExcelLoader:
@@ -29,17 +30,32 @@ class ExcelDumper:
 
 
 class WordDumper:
-    # def __init__(self, save_path):
-    #     self.save_path = save_path
-    #
-    # # write file
-    # @staticmethod
-    # def write_file(filename, samples: dict):
-    #     with pd.ExcelWriter(filename) as writer:
-    #         for sample_name, sample in samples.items():
-    #             sample.to_excel(writer, sheet_name=sample_name)
-    #     print("Wrote to {}.".format(filename))
-    pass
+    def __init__(self, save_path):
+        self.save_path = save_path
+
+    # write file
+    @staticmethod
+    def write_file(filename, samples: dict):
+        document = docx.Document()
+
+        for key, value in samples.items():
+            document.add_heading(key, level=1)
+
+            if isinstance(value, pd.DataFrame):   # if df -> add table in docx else add text
+                if not value.empty:
+                    table = document.add_table(rows=value.shape[0] + 1, cols=value.shape[1])
+                    for col_num, col_name in enumerate(value.columns):
+                        table.cell(0, col_num).text = col_name
+                    for row_num in range(value.shape[0]):
+                        for col_num in range(value.shape[1]):
+                            table.cell(row_num + 1, col_num).text = str(value.iloc[row_num, col_num])
+                else:
+                    document.add_paragraph(str("Данные приведены в excel файле"))  # write file name (excel)?
+            else:
+                document.add_paragraph(str(value))
+
+        document.save(filename)
+        print("Wrote to {}.".format(filename))
 
 
 class MongoLoader:

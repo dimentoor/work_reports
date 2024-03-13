@@ -64,7 +64,7 @@ class Analyzer:
         df_value_counts = pd.DataFrame(unique_count)
         df_value_counts = df_value_counts.reset_index()
         df_value_counts.columns = ['Учетная запись', 'Количество вхождений']
-        self.res_df = df_value_counts[df_value_counts['Количество вхождений'] >= 3]
+        self.res_df = df_value_counts[df_value_counts['Количество вхождений'] >= 4]
         self.res_df.index = np.arange(1, len(self.res_df) + 1)  # new index
 
         return self.res_df
@@ -135,6 +135,7 @@ class Analyzer:
             # suffixes=[index for index in gui.Form2.reports_indexes])
         merged_df = merged_df.fillna(0)
         self.dtypes = merged_df
+        self.dtypes.index = np.arange(1, len(self.dtypes) + 1)  # new index
 
         return self.dtypes
 

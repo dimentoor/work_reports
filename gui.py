@@ -233,6 +233,9 @@ class App(tk.Tk):
         self.filenames_list = list()  # changed urls_list_open list
         self.urls_list_save = list()  # result save list
 
+        self.filenames_word = list()  # test for word
+        self.urls_list_save_word = list()  # result save list
+
         self.reports_indexes = list()  # test for dynamic
 
         # buttons
@@ -247,10 +250,13 @@ class App(tk.Tk):
         self.close_btn = tk.Button(self, text="Close", command=self.destroy)
         self.skip_btn = tk.Button(self, text="Skip upload to database", command=self.skip_step)
         self.skip_btn.configure(state='disabled')
+        self.word_report_btn = tk.Button(self, text="Create .docx file", command=self.destroy)  # in work
+        self.word_report_btn.configure(state='disabled')  # in work
 
         # labels
         label_1 = tk.Label(self, text="Select file(s) for analyze")
         label_2 = tk.Label(self, text="Select report type")
+        self.dynamic_btn.pack()
 
         # radiobutton
         self.radios = [tk.Radiobutton(self, text=key, value=value,
@@ -270,17 +276,20 @@ class App(tk.Tk):
             radio.pack(padx=10, anchor=tk.W)
 
         self.path_list.pack()  #
-        self.dynamic_btn.pack()
         self.analyze_btn.pack()
         self.database_btn.pack()
         self.skip_btn.pack()
         self.save_btn.pack()
+        self.word_report_btn.pack()
         self.close_btn.pack()
 
     def clear_state(self):
         self.urls_list_open.clear()
         self.filenames_list.clear()
         self.urls_list_save.clear()
+
+        self.filenames_word.clear()  # new(test)
+        self.urls_list_save_word.clear()  # new(test)
 
         self.reports_indexes.clear()
 
@@ -310,23 +319,23 @@ class App(tk.Tk):
 
     def get_file_names(self):
         self.urls_list_open.extend(filedialog.askopenfilenames(title='Choose a file'))
-        # print("------")
         for path in range(len(self.urls_list_open)):
             el = self.urls_list_open[path].rfind('/')
             names_ = '/report_' + self.urls_list_open[path][el + 1:]
+            word_str = names_[:-4] + "docx"  # word
 
-            el_index = names_.rfind('_')  #
-            names_index = names_[el_index + 1:-5]  #
-            if names_index not in self.reports_indexes:  #
-                self.reports_indexes.append(names_index)  #
+            el_index = names_.rfind('_')
+            names_index = names_[el_index + 1:-5]
+            if names_index not in self.reports_indexes:
+                self.reports_indexes.append(names_index)
 
             if names_ not in self.filenames_list:
                 self.filenames_list.append(names_)
 
                 self.path_list.insert(path, self.filenames_list[path])
 
-        print(self.filenames_list)
-        print(self.reports_indexes)  #
+            if word_str not in self.filenames_word:
+                self.filenames_word.append(word_str)
 
         if len(self.filenames_list) == 0:
             self.error_message("Open files", "Please select a file")
@@ -350,6 +359,11 @@ class App(tk.Tk):
             graphics_th = graphics.Graphics(tmp, self.dict_values(), self.reports_indexes)  # graphics
             graphics_th.all_graphics()
 
+            # test new word report
+            for obj in range(len(App.threats_objects)):
+                App.threats_objects[obj].create_word_report()
+            # return  # test
+
         elif self.dict_values() == 2:
             # PROGRAM_VERSIONS
             for path in self.urls_list_open:
@@ -358,6 +372,7 @@ class App(tk.Tk):
             # (rework) rewrite like same as above
             for obj in range(len(App.program_versions_objects)):
                 App.program_versions_objects[obj].all_samples_program_versions()
+            # return  # test
 
         elif self.dict_values() == 3:
             # ANTIVIRUS_BASES
@@ -405,11 +420,13 @@ class App(tk.Tk):
         self.folder_save = filedialog.askdirectory(title='Choose a directory')
 
         for path in range(len(self.filenames_list)):
-            self.urls_list_save.append(self.folder_save + self.filenames_list[path])
+            self.urls_list_save.append(self.folder_save + self.filenames_list[path])  # save excel
+            self.urls_list_save_word.append(self.folder_save + self.filenames_word[path])  # save word
 
         if self.dict_values() == 1:
             for obj in range(len(App.threats_objects)):
                 App.threats_objects[obj].save_result(self.urls_list_save[obj])
+                App.threats_objects[obj].save_result_word(self.urls_list_save_word[obj])
 
         elif self.dict_values() == 2:
             for obj in range(len(App.program_versions_objects)):
@@ -470,7 +487,7 @@ class App(tk.Tk):
         self.save_btn.configure(state='normal')
 
     def dynamic_report(self):
-        dynamic_window = Form2(self, main.dynamic_dict)
+        return Form2(self, main.dynamic_dict)
         # user = dynamic_window.open()
 
     @staticmethod

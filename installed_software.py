@@ -64,6 +64,8 @@ class InstalledSoftware:
 
         # print(test_df.count())
         self.software = test_df
+        self.software.index = np.arange(1, len(self.software) + 1)  # new index
+
         # print(self.software.count())  # check
 
         return self.software
