@@ -2,6 +2,8 @@ import pandas as pd
 import json
 import database
 import docx
+from io import BytesIO
+from docx.shared import Inches
 
 
 class ExcelLoader:
@@ -51,6 +53,10 @@ class WordDumper:
                             table.cell(row_num + 1, col_num).text = str(value.iloc[row_num, col_num])
                 else:
                     document.add_paragraph(str("Данные приведены в excel файле"))  # write file name (excel)?
+
+            elif isinstance(value, BytesIO):  # if BytesIO -> add image
+                document.add_picture(value, width=Inches(4))
+                # document.add_paragraph(str(value))
             else:
                 document.add_paragraph(str(value))
 

@@ -19,8 +19,9 @@ import main
 class Form2(tk.Toplevel):
     threats_objects = list()
     antivirus_bases_objects = list()
-    dynamic_th = analyze.Analyzer()
-    dynamic_ab = analyze.Analyzer()
+    # dynamic_th = analyze.Analyzer(reports_indexes=Form2.get_file_names())
+    # dynamic_ab = analyze.Analyzer()
+    # reports_indexes = list()
 
     def __init__(self, parent, dynamic_dict):
         super().__init__(parent)
@@ -32,7 +33,13 @@ class Form2(tk.Toplevel):
         self.urls_list_save = list()  # result save list
         self.current_date = datetime.now()
 
+        self.filenames_word = list()  # test word
+        self.urls_list_save_word = list()  # result save word
+
         self.reports_indexes = list()  # test for dynamic
+
+        self.dynamic_th = analyze.Analyzer(self.reports_indexes)
+        self.dynamic_ab = analyze.Analyzer(self.reports_indexes)
 
         # buttons
         self.open_btn = tk.Button(self, text="Open file(s)", command=self.get_file_names)
@@ -79,6 +86,9 @@ class Form2(tk.Toplevel):
 
         self.reports_indexes.clear()
 
+        self.filenames_word.clear()  # new word
+        self.urls_list_save_word.clear()  # new word
+
         self.threats_objects.clear()
         self.antivirus_bases_objects.clear()
 
@@ -104,6 +114,7 @@ class Form2(tk.Toplevel):
         for path in range(len(self.urls_list_open)):
             el = self.urls_list_open[path].rfind('/')
             names_ = '/dynamic_' + self.urls_list_open[path][el + 1:]
+            word_str = names_[:-4] + "docx"  # word
 
             el_index = names_.rfind('_')  #
             names_index = names_[el_index + 1:-5]  #
@@ -117,8 +128,14 @@ class Form2(tk.Toplevel):
         # self.urls_list_save.append(self.filenames_list[0][0:len(
         #     self.filenames_list[0]) - 5] + "-" + self.filenames_list[-1][-9:-5])
 
+            # if word_str not in self.filenames_word:
+            #     self.filenames_word.append(word_str)
+
         print(self.filenames_list)
         print(self.reports_indexes)  #
+
+        # dynamic_th = analyze.Analyzer(self.reports_indexes)
+        # dynamic_ab = analyze.Analyzer(self.reports_indexes)
 
         if len(self.filenames_list) == 0:
             self.error_message("Open files", "Please select a file")
@@ -130,33 +147,35 @@ class Form2(tk.Toplevel):
             for radio in self.radios:
                 radio.configure(state='normal')
 
+        return self.reports_indexes
+
     def report_create(self):
         if self.dict_values() == 1:
             # THREATS
             for path in self.urls_list_open:
-                Form2.threats_objects.append(threats.ThreatsReport(path, threats.th_sheet_name))
+                Form2.threats_objects.append(threats.ThreatsReport(path, threats.th_sheet_name, self.reports_indexes))
             # (rework)  rewrite like same as above
             for obj in range(len(Form2.threats_objects)):
                 Form2.threats_objects[obj].all_samples_threats()
-            Form2.dynamic_th.all_samples_th(Form2.threats_objects)
+            self.dynamic_th.all_samples_th(Form2.threats_objects)
 
-            tmp = Form2.dynamic_th
-            graphics_th = graphics.Graphics(tmp, self.dict_values(), self.reports_indexes)  # graphics
-            graphics_th.all_graphics_dynamic()
+            # tmp = Form2.dynamic_th
+            # graphics_th = graphics.Graphics(tmp, self.dict_values(), self.reports_indexes)  # graphics
+            # graphics_th.all_graphics_dynamic()
 
         elif self.dict_values() == 2:
             # ANTIVIRUS_BASES
             for path in self.urls_list_open:
                 Form2.antivirus_bases_objects.append(antivirus_bases.AntivirusBases(
-                    path, antivirus_bases.ab_sheet_name))
+                    path, antivirus_bases.ab_sheet_name, self.reports_indexes))
             # (rework) rewrite like same as above
             for obj in range(len(Form2.antivirus_bases_objects)):
                 Form2.antivirus_bases_objects[obj].all_samples_antivirus_bases()
-            Form2.dynamic_ab.all_samples_ab(Form2.antivirus_bases_objects)
+            self.dynamic_ab.all_samples_ab(Form2.antivirus_bases_objects)
 
-            tmp = Form2.dynamic_ab
-            graphics_ab = graphics.Graphics(tmp, self.dict_values(), self.reports_indexes)  # graphics
-            graphics_ab.all_graphics_dynamic()
+            # tmp = Form2.dynamic_ab
+            # graphics_ab = graphics.Graphics(tmp, self.dict_values(), self.reports_indexes)  # graphics
+            # graphics_ab.all_graphics_dynamic()
 
         else:
             output = "Invalid selection"
@@ -172,15 +191,20 @@ class Form2(tk.Toplevel):
     def save_files(self):
         self.folder_save = filedialog.askdirectory(title='Choose a directory')
         print(self.folder_save + self.urls_list_save[-1])
-        if self.dict_values() == 1:
-            Form2.dynamic_th.save_result_th(self.folder_save + self.urls_list_save[-1] + '.xlsx')
 
-        elif self.dict_values() == 2:
-            Form2.dynamic_ab.save_result_ab(self.folder_save + self.urls_list_save[-1] + '.xlsx')
+        # self.urls_list_save_word.append(self.folder_save + self.filenames_word[path])  # save word
 
-        else:
-            output = "Invalid selection"
-            print(output)
+        # if self.dict_values() == 1:
+        #     self.dynamic_th.save_result_th(self.folder_save + self.urls_list_save[-1] + '.xlsx')
+        #     self.dynamic_th.save_result_word(self.urls_list_save_word[obj])
+        #
+        # elif self.dict_values() == 2:
+        #     self.dynamic_ab.save_result_ab(self.folder_save + self.urls_list_save[-1] + '.xlsx')
+        #     self.dynamic_ab.save_result_word(self.urls_list_save_word[obj])
+        #
+        # else:
+        #     output = "Invalid selection"
+        #     print(output)
 
         self.info_message("Save", "Files successfully saved")
         self.clear_state()
@@ -188,11 +212,11 @@ class Form2(tk.Toplevel):
 
     def add_to_database(self):
         if self.dict_values() == 1:
-            save.MongoDumper.df_to_json(Form2.dynamic_th.dict,
+            save.MongoDumper.df_to_json(self.dynamic_th.dict,
                                         '{}_{}'.format(self.urls_list_save[0], datetime.now().strftime("/%S")))
 
         elif self.dict_values() == 2:
-            save.MongoDumper.df_to_json(Form2.dynamic_ab.dict,
+            save.MongoDumper.df_to_json(self.dynamic_ab.dict,
                                         '{}_{}'.format(self.urls_list_save[0], datetime.now().strftime("/%S")))
 
         else:
@@ -233,10 +257,10 @@ class App(tk.Tk):
         self.filenames_list = list()  # changed urls_list_open list
         self.urls_list_save = list()  # result save list
 
-        self.filenames_word = list()  # test for word
-        self.urls_list_save_word = list()  # result save list
+        self.filenames_word = list()  # test word
+        self.urls_list_save_word = list()  # result save word
 
-        self.reports_indexes = list()  # test for dynamic
+        self.reports_indexes = list()  # graphics description
 
         # buttons
         self.open_btn = tk.Button(self, text="Open file(s)", command=self.get_file_names)
@@ -250,7 +274,7 @@ class App(tk.Tk):
         self.close_btn = tk.Button(self, text="Close", command=self.destroy)
         self.skip_btn = tk.Button(self, text="Skip upload to database", command=self.skip_step)
         self.skip_btn.configure(state='disabled')
-        self.word_report_btn = tk.Button(self, text="Create .docx file", command=self.destroy)  # in work
+        self.word_report_btn = tk.Button(self, text="Create .docx file", command=self.destroy)  # in work | unite all word doc into one при нижитии открывается окно, в котором можно выбрать документы и потом объединить их
         self.word_report_btn.configure(state='disabled')  # in work
 
         # labels
@@ -288,8 +312,8 @@ class App(tk.Tk):
         self.filenames_list.clear()
         self.urls_list_save.clear()
 
-        self.filenames_word.clear()  # new(test)
-        self.urls_list_save_word.clear()  # new(test)
+        self.filenames_word.clear()  # new word
+        self.urls_list_save_word.clear()  # new word
 
         self.reports_indexes.clear()
 
@@ -349,19 +373,18 @@ class App(tk.Tk):
         if self.dict_values() == 1:
             # THREATS
             print(len(self.urls_list_open))
-            for path in self.urls_list_open:
-                App.threats_objects.append(threats.ThreatsReport(path, threats.th_sheet_name))
-            # (rework)  rewrite like same as above
+            for index, path in enumerate(self.urls_list_open):
+                App.threats_objects.append(threats.ThreatsReport(path, threats.th_sheet_name, self.reports_indexes[index]))
             for obj in range(len(App.threats_objects)):
                 App.threats_objects[obj].all_samples_threats()
 
-            tmp = copy.deepcopy(App.threats_objects)
-            graphics_th = graphics.Graphics(tmp, self.dict_values(), self.reports_indexes)  # graphics
-            graphics_th.all_graphics()
+            # tmp = copy.deepcopy(App.threats_objects)
+            # graphics_th = graphics.Graphics(tmp, self.dict_values(), self.reports_indexes)  # graphics
+            # graphics_th.all_graphics()
 
-            # test new word report
-            for obj in range(len(App.threats_objects)):
-                App.threats_objects[obj].create_word_report()
+            # test new word report || can be transformed into func which create word report on button click
+            # for obj in range(len(App.threats_objects)):
+            #     App.threats_objects[obj].create_word_report()
             # return  # test
 
         elif self.dict_values() == 2:
@@ -369,28 +392,30 @@ class App(tk.Tk):
             for path in self.urls_list_open:
                 App.program_versions_objects.append(program_versions.ProgramVersions(
                     path, program_versions.pv_sheet_name))
-            # (rework) rewrite like same as above
             for obj in range(len(App.program_versions_objects)):
                 App.program_versions_objects[obj].all_samples_program_versions()
             # return  # test
 
         elif self.dict_values() == 3:
             # ANTIVIRUS_BASES
-            for path in self.urls_list_open:
-                App.antivirus_bases_objects.append(antivirus_bases.AntivirusBases(path, antivirus_bases.ab_sheet_name))
-            # (rework) rewrite like same as above
+            for index, path in enumerate(self.urls_list_open):
+                App.antivirus_bases_objects.append(antivirus_bases.AntivirusBases(path, antivirus_bases.ab_sheet_name, self.reports_indexes[index]))
             for obj in range(len(App.antivirus_bases_objects)):
                 App.antivirus_bases_objects[obj].all_samples_antivirus_bases()
 
-            tmp = copy.deepcopy(App.antivirus_bases_objects)
-            graphics_ab = graphics.Graphics(tmp, self.dict_values(), self.reports_indexes)  # graphics
-            graphics_ab.all_graphics()
+            # tmp = copy.deepcopy(App.antivirus_bases_objects)
+            # graphics_ab = graphics.Graphics(tmp, self.dict_values(), self.reports_indexes)  # graphics
+            # graphics_ab.all_graphics()
+
+            # test new word report || can be transformed into func which create word report on button click
+            # for obj in range(len(App.antivirus_bases_objects)):
+            #     App.antivirus_bases_objects[obj].create_word_report()
+            # return  # test
 
         elif self.dict_values() == 4:
             # NETWORK_ATTACKS
             for path in self.urls_list_open:
                 App.network_attacks_objects.append(network_attacks.NetworkAttacks(path, network_attacks.na_sheet_name))
-            # (rework) rewrite like same as above
             for obj in range(len(App.network_attacks_objects)):
                 App.network_attacks_objects[obj].all_samples_network_attack()
 
@@ -399,7 +424,6 @@ class App(tk.Tk):
             for path in self.urls_list_open:
                 App.installed_software_objects.append(installed_software.InstalledSoftware(
                     path, installed_software.is_sheet_name))
-            # (rework) rewrite like same as above
             for obj in range(len(App.installed_software_objects)):
                 App.installed_software_objects[obj].all_samples_installed_software()
         else:
@@ -431,10 +455,12 @@ class App(tk.Tk):
         elif self.dict_values() == 2:
             for obj in range(len(App.program_versions_objects)):
                 App.program_versions_objects[obj].save_result(self.urls_list_save[obj])
+                App.program_versions_objects[obj].save_result_word(self.urls_list_save_word[obj])
 
         elif self.dict_values() == 3:
             for obj in range(len(App.antivirus_bases_objects)):
                 App.antivirus_bases_objects[obj].save_result(self.urls_list_save[obj])
+                App.antivirus_bases_objects[obj].save_result_word(self.urls_list_save_word[obj])
 
         elif self.dict_values() == 4:
             for obj in range(len(App.network_attacks_objects)):

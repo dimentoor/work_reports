@@ -1,27 +1,55 @@
 import basic
-import gui
+import graphics
 import save
 import pandas as pd
 import numpy as np
 
+# Динамика изменений количества типов угроз за период 02.02 – 03.01
+# Динамика изменений статусов антивирусных баз за период 02.02 – 03.01
 
-class Analyzer:
 
-    def __init__(self):
-        self.dblack_list = 0
+class Analyzer(graphics.Graphics):
+
+    def __init__(self, reports_indexes):
+        super().__init__(reports_indexes)  # for parent class
+        # self.samples_list = list()
+        self.dict = {}
+        self.dict_word = {}
+# THREATS
         # self.dblack_list_parts = 0
         self.res_df = 0
-        self.dstatuses = 0
-        self.dstatuses_sum = 0
+        self.res_df_text = "На листе black_list_pv представлен список сотрудников, учетные записи которых " \
+                           "фигурировали в каждом из ранее обработанных отчетов Касперского за февраль."
+
+        self.dblack_list = 0
+        self.dblack_list_text = "На листе black_list_summed_threats представлен список нарушителей за февраль (по " \
+                                "обработанным ранее отчетам) с указанием суммы полученных “балов” в результате " \
+                                "вычисления следующей формулы: количество угроз* вес типа угрозы."
+        self.dblack_list_word = 0
+
         self.dtypes = 0
+        self.dtypes_text = "На листе threat_types_parts представлена таблица типов полученных угроз за февраль (по " \
+                           "обработанным ранее отчетам), а также ее графическое отображение."
+
         self.dtypes_summ = 0
-        self.dict = {}
-        self.samples_list = list()
+        self.dtypes_summ_text = "На листе threat_types_summ представлена таблица суммы типов полученных угроз за " \
+                                "февраль (по обработанным ранее отчетам)."
+# ANTIVIRUS BASES
+        self.dstatuses = 0
+        self.dstatuses_text = "На листе ab_statuses_parts представлена таблица по статусам антивирусных баз за февраль (по обработанным ранее отчетам), а также ее графическое отображение."
+
+        self.dstatuses_sum = 0
+        self.dstatuses_sum_text = "На листе ab_statuses_sum представлена сокращенная таблица по статусам антивирусных баз за февраль (по обработанным ранее отчетам)."
+
+        self.empty_df = pd.DataFrame()  # for dict_word{}
+        self.diagram_text = "Диаграмма_", reports_indexes
+        self.dynamic_plot_text = "Диаграмма_plot", reports_indexes
+        self.dynamic_bar_text = "Диаграмма_bar", reports_indexes
+
+    def save_result_word(self, save_path):  # save word
+        save.WordDumper.write_file(save_path, self.dict_word)
 
     def save_result_th(self, save_path):
-        save.ExcelDumper.write_file(save_path, self.dict)
-
-    def save_result_ab(self, save_path):
         save.ExcelDumper.write_file(save_path, self.dict)
 
     # start all functions
@@ -31,23 +59,31 @@ class Analyzer:
         # self.th_dblack_list_parts(report_list)
         self.th_dtypes_summ(report_list)
         self.th_dtypes_part(report_list)
+
         self.dict = {
             "black_list_pv": self.res_df,
             "black_list_sum_threats": self.dblack_list,
             # "black_list_sum_parts": self.dblack_list_parts,
             "threat_types_summ": self.dtypes_summ,
-            "threat_types_parts": self.dtypes}
+            "threat_types_parts": self.dtypes
+        }
+
+        self.dict_word = {
+            self.res_df_text: self.empty_df,  # full df
+            self.dblack_list_text: self.dblack_list_word,  # 5 rows
+            self.diagram_text: self.th_create_pie_graphic(),
+            self.dtypes_summ_text: self.dtypes_summ,  # full df
+            self.dynamic_bar_text: self.th_create_bar_graphic(),
+            self.dtypes_text: self.dtypes,  # full df
+            self.dynamic_plot_text: self.th_create_plot_graphic()
+        }
 
     # def list_of_reports(self):
     #     self.samples_list = [self.res_df, self.dblack_list, self.dtypes_summ, self.dtypes]
     #     # print(dir(self.samples_list))
     #     return self.samples_list
 
-    def all_samples_ab(self, report_list):
-        self.ab_dstatuses_summ(report_list)
-        self.ab_dstatuses_part(report_list)
-        self.dict = {"ab_statuses_sum": self.dstatuses_sum,
-                     "ab_statuses_parts": self.dstatuses}
+# THREATS
 
     # persistent_violators
     def th_dblack_list(self, report_list):
@@ -58,6 +94,7 @@ class Analyzer:
             objects_list.append(report.weighted_users)  # new
             # print(report.black_list.columns.values)  # debug
         self.dblack_list = pd.concat(objects_list)
+        self.dblack_list_word = self.dblack_list.iloc[:5]  # df for word report (5 rows)
 
         unique_count = self.dblack_list['Учетная запись'].value_counts()
         # conversion to df and assigning new column names
@@ -139,6 +176,41 @@ class Analyzer:
 
         return self.dtypes
 
+# Graphics
+    def th_create_hist_graphic(self):
+        return self.hist_diagram(self.dtypes_summ, 'Тип объекта', 'Кол-во объектов')
+
+    def th_create_pie_graphic(self):
+        return self.pie_diagram(self.dtypes_summ["Кол-во объектов"],
+                                self.dtypes_summ["Тип объекта"])
+
+    def th_create_bar_graphic(self):
+        self.dtypes = self.df_index_conversion(self.dtypes, 'Тип объекта')
+        return self.dynamic_bar_diagram(self.dtypes)
+
+    def th_create_plot_graphic(self):
+        return self.dynamic_plot_diagram(self.dtypes)
+
+# ANTIVIRUS_BASES
+
+    def save_result_ab(self, save_path):
+        save.ExcelDumper.write_file(save_path, self.dict)
+
+    def all_samples_ab(self, report_list):
+        self.ab_dstatuses_summ(report_list)
+        self.ab_dstatuses_part(report_list)
+
+        self.dict = {"ab_statuses_sum": self.dstatuses_sum,
+                     "ab_statuses_parts": self.dstatuses
+                     }
+
+        self.dict_word = {
+            self.diagram_text: self.ab_create_pie_graphic(),
+            self.dstatuses_sum_text: self.dstatuses_sum,  # full df
+            self.dstatuses_text: self.dstatuses,  # full df
+            self.dynamic_plot_text: self.ab_create_plot_graphic()
+        }
+
     def ab_dstatuses_summ(self, report_list):  # summ for the selected period
         objects_list = []
         for report in report_list:
@@ -170,3 +242,18 @@ class Analyzer:
         self.dstatuses = pd.concat(objects_list, axis=1, ignore_index=True)
         # self.dstatuses["result"] = self.dstatuses.sum(axis=1, numeric_only=True)  # column "result"
         return self.dstatuses
+
+# Graphics
+    def ab_create_hist_graphic(self):
+        return self.hist_diagram(self.dstatuses_sum, 'Статус антивирусных баз', 'Кол-во баз')
+
+    def ab_create_pie_graphic(self):
+        return self.pie_diagram(self.dstatuses_sum['Кол-во баз'],
+                                self.dstatuses_sum['Статус антивирусных баз'])
+
+    def ab_create_bar_graphic(self):
+        self.dstatuses = self.df_index_conversion(self.dstatuses, 'Статус антивирусных баз')
+        return self.dynamic_bar_diagram(self.dstatuses)
+
+    def ab_create_plot_graphic(self):
+        return self.dynamic_plot_diagram(self.dstatuses)

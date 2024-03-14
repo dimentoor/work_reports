@@ -1,4 +1,5 @@
 import basic
+import graphics
 import save
 import pandas as pd
 import numpy as np
@@ -19,9 +20,10 @@ threats_weight = {
     "неизвестно": 20}
 
 
-class ThreatsReport:
+class ThreatsReport(graphics.Graphics):
+    def __init__(self, path, sheet_name, reports_indexes):
+        super().__init__(reports_indexes)  # for parent class
 
-    def __init__(self, path, sheet_name):
         self.path = path
         self.sheet_name = sheet_name
         self.open_obj = save.ExcelLoader(self.path, self.sheet_name)
@@ -30,28 +32,32 @@ class ThreatsReport:
 
         self.black_list = 0
         self.black_list_text = "На листе black_list_sample представлено соотношение имени устройства нарушителя, " \
-                               "IP-адреса его устройства с количеством нарушений цветом выделены топ);"
+                               "IP-адреса его устройства с количеством нарушений цветом выделены топ)."
         self.users = 0
         self.users_text = "На листе users_sample представлено соотношение имени устройства пользователя, его учетной " \
                           "записи, IP-адреса с обнаруженным объектом, его типом и количественным представлением."
         self.threat_types = 0
         self.threat_types_text = "На листе threat_types_sample представлено распределение обнаруженных объектов по " \
-                                 "типам объекта и их количество;"
+                                 "типам объекта и их количество."
 
         self.types = 0
         self.types_text = "На листе types_sample представлены виды типов объекта и их количество."
-
         self.types_num = 0
+
         self.unique = 0
         self.unique_text = "На листе unique_sample представлено количество уникальных полей по каждому столбцу таблицы."
 
         # self.black_list_parts = 0
+
         self.weighted_users = 0
         self.weighted_users_word = 0  # only for cut df
         self.weighted_users_text = "На листе weighted_users_sample представлен список устройств и условное число " \
                                    "“очков”, полученных в " \
                                    "результате вычисления следующей формулы: количество угроз * вес типа угрозы."
         self.empty_df = pd.DataFrame()  # for dict_word{}
+        # self.pie_obj = 0  # graphics
+        # self.hist_obj = 0  # graphics
+        self.diagram_text = "Диаграмма_", reports_indexes
 
     def save_result(self, save_path):  # save excel
         save.ExcelDumper.write_file(save_path, self.dict)
@@ -73,16 +79,18 @@ class ThreatsReport:
             "weighted_users_sample": self.weighted_users,
             "black_list_sample": self.black_list,
             "types_sample": self.types,
-            "threat_types_sample": self.threat_types}
+            "threat_types_sample": self.threat_types
+        }
 
-    def create_word_report(self):
         self.dict_word = {
-            self.unique_text: self.empty_df,
+            self.unique_text: self.unique,  # full df
             self.users_text: self.empty_df,
             self.weighted_users_text: self.weighted_users_word,  # 5-10 rows
             self.black_list_text: self.empty_df,
+            self.diagram_text: self.create_hist_graphic(),  # new diagram in word
             self.types_text: self.types,  # full df
-            self.threat_types_text: self.empty_df}
+            self.threat_types_text: self.empty_df
+        }
 
     def unique_sample(self):
         self.unique = self.open_obj.table.nunique().reset_index().rename(columns={'index': 'Поля', 0: 'Количество'})
@@ -141,7 +149,7 @@ class ThreatsReport:
             ['Тип объекта', 'Обнаруженный объект']])
         self.threat_types = self.threat_types.groupby([
             'Тип объекта'])[['Обнаруженный объект']].value_counts()
-        self.threat_types.name = 'Count'
+        self.threat_types.name = 'Количество'
 
         return self.threat_types
 
@@ -164,3 +172,13 @@ class ThreatsReport:
         self.types_num = self.types.drop(columns=['Тип объекта'], axis=1)
 
         return self.types
+
+# Graphics
+    def create_hist_graphic(self):
+        # self.hist_obj = self.hist_diagram(self.types, "Тип объекта", "Кол-во объектов")
+        # return self.hist_obj
+        return self.hist_diagram(self.types, "Тип объекта", "Кол-во объектов")
+
+    def create_pie_graphic(self):
+        return self.pie_diagram(self.types["Кол-во объектов"], self.types["Тип объекта"])
+

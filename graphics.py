@@ -3,40 +3,8 @@ from io import BytesIO
 
 
 class Graphics:
-    graphics_objects = list()
-
-    def __init__(self, report_list, check_point, reports_indexes):
-        self.check_point = check_point  # dict_values, check type of report
-        self.report_list = report_list  # list of indexes of opened reports
-
+    def __init__(self, reports_indexes):
         self.reports_indexes = reports_indexes
-
-        self.pie_obj = 0
-        self.hist_obj = 0
-
-    def clear_state(self):
-        self.report_list.clear()
-        self.graphics_objects.clear()
-
-    def all_graphics(self):
-        self.create_graphics()
-        self.clear_state()
-
-    def create_graphics(self):
-        for report in self.report_list:
-            if self.check_point == 1:
-                # THREATS
-                # self.pie_obj = self.pie_diagram(report.types["Кол-во объектов"], report.types["Тип объекта"])
-                # self.hist_obj = self.hist_diagram(report.types, "Тип объекта", "Кол-во объектов")
-                self.pie_diagram(report.types["Кол-во объектов"], report.types["Тип объекта"])
-                self.hist_diagram(report.types, "Тип объекта", "Кол-во объектов")
-
-                # Graphics.graphics_objects.append()
-
-            elif self.check_point == 3:
-                # ANTIVIRUS_BASES
-                self.pie_diagram(report.statuses["Кол-во баз"], report.statuses["Статус антивирусных баз"])
-                self.hist_diagram(report.statuses, "Статус антивирусных баз", "Кол-во баз")
 
     @staticmethod
     def pie_diagram(data, labels):
@@ -44,64 +12,38 @@ class Graphics:
                 autopct='%1.1f%%', shadow=True, startangle=140)
         plt.axis('equal')
         plt.title("Pie_diagram")  # add name of report
-        # Сохраняем график в байтовый объект
+        plt.tight_layout()  # Adjust the layout to fit all elements
         buffer = BytesIO()
         plt.savefig(buffer, format='png')
         buffer.seek(0)
-        plt.show()
-        # return buffer
+        plt.close()
+        # plt.show()
+        return buffer
 
     @staticmethod
     def hist_diagram(df, labels, data):
         df.plot(kind='bar', x=labels, y=data)
         plt.title("Hist_diagram")
-
-        # Сохраняем график в байтовый объект
+        plt.tight_layout()  # Adjust the layout to fit all elements
         buffer = BytesIO()
         plt.savefig(buffer, format='png')
         buffer.seek(0)
-        plt.show()
-        # return buffer
-
-    def all_graphics_dynamic(self):
-        self.create_graphics_dynamic()
-        # self.clear_state()
-
-    def create_graphics_dynamic(self):
-        if self.check_point == 1:
-            # THREATS
-            # dynamic pie diagram
-            self.pie_diagram(self.report_list.dtypes_summ["Кол-во объектов"],
-                             self.report_list.dtypes_summ["Тип объекта"])
-            # dynamic hist diagram
-            self.hist_diagram(self.report_list.dtypes_summ, 'Тип объекта', 'Кол-во объектов')
-
-            # dynamic bar diagram
-            self.report_list.dtypes = self.df_index_conversion(self.report_list.dtypes, 'Тип объекта')
-            self.dynamic_bar_diagram(self.report_list.dtypes)
-
-            # dynamic plot diagram
-            self.dynamic_plot_diagram(self.report_list.dtypes)
-
-        elif self.check_point == 2:
-            # ANTIVIRUS_BASES
-            # dynamic pie diagram
-            self.pie_diagram(self.report_list.dstatuses_sum['Кол-во баз'],
-                             self.report_list.dstatuses_sum['Статус антивирусных баз'])
-            # dynamic hist diagram
-            self.hist_diagram(self.report_list.dstatuses_sum, 'Статус антивирусных баз', 'Кол-во баз')
-
-            # dynamic bar diagram
-            self.report_list.dstatuses = self.df_index_conversion(self.report_list.dstatuses, 'Статус антивирусных баз')
-            self.dynamic_bar_diagram(self.report_list.dstatuses)
-
-            # dynamic plot diagram
-            self.dynamic_plot_diagram(self.report_list.dstatuses)
+        plt.close()
+        # plt.show()
+        return buffer
 
     @staticmethod
     def dynamic_bar_diagram(df):
         df.plot.bar()
-        plt.show()
+        # plt.show()
+        plt.title("Bar_diagram")
+        plt.tight_layout()  # Adjust the layout to fit all elements
+        buffer = BytesIO()
+        plt.savefig(buffer, format='png')
+        buffer.seek(0)
+        plt.close()
+        # plt.show()
+        return buffer
 
     @staticmethod
     def dynamic_plot_diagram(df):
@@ -110,6 +52,14 @@ class Graphics:
         plt.legend(fontsize=7, bbox_to_anchor=(1, 0.6))
         # plt.xticks(rotation=90)
         plt.show()
+        plt.title("Plot_diagram")
+        plt.tight_layout()  # Adjust the layout to fit all elements
+        buffer = BytesIO()
+        plt.savefig(buffer, format='png')
+        buffer.seek(0)
+        plt.close()
+        # plt.show()
+        return buffer
 
     # преобразует df из analyze. Меняем индексы на полученные из имен открытых отчетов
     # добавляем их в df, а также меняем 0 индекс на имя столбца текстовых данных из первичных(не динамических) отчетов

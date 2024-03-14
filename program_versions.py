@@ -14,16 +14,31 @@ class ProgramVersions:
     def __init__(self, path, sheet_name):
         self.path = path
         self.sheet_name = sheet_name
-        self.program_versions = 0
-        self.alive = 0  # new
-        self.filtered_df = 0  # new
-        # self.updates = 0
-        self.unique = 0
         self.open_obj = save.ExcelLoader(self.path, self.sheet_name)
         self.dict = {}
+        self.dict_word = {}
 
-    def save_result(self, save_path):
+        self.program_versions = 0
+        self.program_versions_text = "На листе program_versions_sample представлено количество установленных " \
+                                     "обновлений, распределенное по номерам версий программ."
+
+        self.alive = 0
+        self.alive_text = "На листе alive_sample представлены имена устройств и их последнее появление в сети."
+
+        self.filtered_df = 0
+        self.filtered_df_text = "На листе filtered_alive представлены имена устройств и их последнее появление в " \
+                                "сети, отличающиеся от даты произведения анализа отчета на 7 или более дней."
+        # self.updates = 0
+        self.unique = 0
+        self.unique_text = "На листе unique_sample представлено количество уникальных полей по каждому столбцу таблицы."
+
+        self.empty_df = pd.DataFrame()  # for dict_word{}
+
+    def save_result(self, save_path):  # save excel
         save.ExcelDumper.write_file(save_path, self.dict)
+
+    def save_result_word(self, save_path):  # save word
+        save.WordDumper.write_file(save_path, self.dict_word)
 
     def all_samples_program_versions(self):
         self.open_obj.open_file()
@@ -35,7 +50,15 @@ class ProgramVersions:
             "unique_sample": self.unique,
             "program_versions_sample": self.program_versions,
             "alive_sample": self.alive,
-            "filtered_alive": self.filtered_df}
+            "filtered_alive": self.filtered_df
+        }
+
+        self.dict_word = {
+            self.unique_text: self.unique,  # full df
+            self.program_versions_text: self.empty_df,  # incorrect display
+            self.alive_text: self.empty_df,
+            self.filtered_df_text: self.empty_df
+        }
 
     def unique_sample(self):
         self.unique = self.open_obj.table.nunique().reset_index().rename(columns={'index': 'Поля', 0: 'Количество'})
@@ -49,7 +72,7 @@ class ProgramVersions:
         self.program_versions = self.program_versions.groupby([
             'Программа'])[['Номер версии']].value_counts()
 
-        self.program_versions.name = 'Count'
+        self.program_versions.name = 'Количество'
 
         return self.program_versions
 
@@ -76,4 +99,3 @@ class ProgramVersions:
         self.filtered_df.index = np.arange(1, len(self.filtered_df) + 1)  # new index
 
         return self.filtered_df
-

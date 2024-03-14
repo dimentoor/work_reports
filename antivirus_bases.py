@@ -1,4 +1,5 @@
 import basic
+import graphics
 import pandas as pd
 import numpy as np
 import save
@@ -7,22 +8,46 @@ import save
 ab_sheet_name = 'list1'
 
 
-class AntivirusBases:
+class AntivirusBases(graphics.Graphics):
 
-    def __init__(self, path, sheet_name):
+    def __init__(self, path, sheet_name, reports_indexes):
+        super().__init__(reports_indexes)  # for parent class
+
         self.path = path
         self.sheet_name = sheet_name
-        # self.programs = 0  # uninformative
-        self.statuses = 0
-        self.statuses_num = 0
-        self.users_statuses = 0
-        self.pvs_sample = 0
-        self.unique = 0
         self.open_obj = save.ExcelLoader(self.path, self.sheet_name)
         self.dict = {}
+        self.dict_word = {}
 
-    def save_result(self, save_path):
+        # self.programs = 0  # uninformative
+        # self.programs_text = "На листе programs_sample представлены установленные на АРМ пользователей программы" \
+        #                      "и их количество;"
+
+        self.statuses = 0
+        self.statuses_text = "На листе statuses_sample представлены типы статусов антивирусных баз и их количество."
+        self.statuses_num = 0
+
+        self.users_statuses = 0
+        self.users_statuses_text = "На листе users_statuses_sample представлено распределение устройств пользователей " \
+                                   "по статусам антивирусных баз."
+
+        self.pvs_sample = 0
+        self.pvs_sample_text = "На листе program_version_status_sample представлено соотношение программы с " \
+                               "установленными версиями, а также статусами антивирусных баз по каждой из версий."
+
+        self.unique = 0
+        self.unique_text = "На листе unique_sample представлено количество уникальных полей по каждому столбцу таблицы."
+
+        self.empty_df = pd.DataFrame()  # for dict_word{}
+        self.pie_obj = 0  # graphics
+        self.hist_obj = 0  # graphics
+        self.diagram_text = "Диаграмма_", reports_indexes
+
+    def save_result(self, save_path):  # save excel
         save.ExcelDumper.write_file(save_path, self.dict)
+
+    def save_result_word(self, save_path):  # save word
+        save.WordDumper.write_file(save_path, self.dict_word)
 
     def all_samples_antivirus_bases(self):
         self.open_obj.open_file()
@@ -36,7 +61,16 @@ class AntivirusBases:
             "program_version_status_sample": self.pvs_sample,
             "users_statuses_sample": self.users_statuses,
             # "programs_sample": self.programs,  # uninformative
-            "statuses_sample": self.statuses}
+            "statuses_sample": self.statuses
+        }
+
+        self.dict_word = {
+            self.unique_text: self.unique,   # full df
+            self.pvs_sample_text: self.empty_df,
+            self.users_statuses_text: self.empty_df,
+            self.diagram_text: self.create_pie_graphic(),  # new diagram in word
+            self.statuses_text: self.statuses  # full df
+        }
 
     def unique_sample(self):
         self.unique = self.open_obj.table.nunique().reset_index().rename(columns={'index': 'Поля', 0: 'Количество'})
@@ -51,7 +85,7 @@ class AntivirusBases:
         self.pvs_sample = self.pvs_sample.groupby(
             ['Группа'])[['Программа', 'Статус антивирусных баз']].value_counts()
 
-        self.pvs_sample.name = 'Count'
+        self.pvs_sample.name = 'Количество'
 
         return self.pvs_sample
 
@@ -60,7 +94,8 @@ class AntivirusBases:
             ['Группа', 'Статус антивирусных баз', 'Устройство']])
         self.users_statuses = self.users_statuses.groupby([
             'Статус антивирусных баз', 'Группа'])[['Устройство']].value_counts()
-        self.users_statuses.name = 'Count'
+
+        self.users_statuses.name = 'Количество'
 
         return self.users_statuses
 
@@ -97,3 +132,12 @@ class AntivirusBases:
     #     self.programs.index = np.arange(1, len(self.programs) + 1)  # new index
     #
     #     return self.programs
+
+    # Graphics
+    def create_hist_graphic(self):
+        self.hist_obj = self.hist_diagram(self.statuses, "Статус антивирусных баз", "Кол-во баз")
+        return self.hist_obj
+
+    def create_pie_graphic(self):
+        self.pie_obj = self.pie_diagram(self.statuses["Кол-во баз"], self.statuses["Статус антивирусных баз"])
+        return self.pie_obj
