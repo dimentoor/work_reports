@@ -16,6 +16,10 @@ class Basic:
     #    а также просуммировать значения в другой строке
     #
     # 2) когда таких полей нет и нужно просто просуммировать столбец со значениями
+
+    groupby_column = 'Тип объекта'
+    out_column = 'Кол-во объектов'
+
     @staticmethod
     def collapse_with_sum(group, dup_name, sum_column_name, few_values=None):
         summ = 0
@@ -31,7 +35,9 @@ class Basic:
                 long_string += row[few_values]
         out = group.drop_duplicates(subset=[dup_name])
         out[sum_column_name] = summ
-        out[few_values] = long_string
+
+        if few_values is not None:
+            out[few_values] = long_string
 
         return out
 

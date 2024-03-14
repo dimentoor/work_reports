@@ -42,9 +42,15 @@ class Analyzer(graphics.Graphics):
         self.dstatuses_sum_text = "На листе ab_statuses_sum представлена сокращенная таблица по статусам антивирусных баз за февраль (по обработанным ранее отчетам)."
 
         self.empty_df = pd.DataFrame()  # for dict_word{}
-        self.diagram_text = "Диаграмма_", reports_indexes
-        self.dynamic_plot_text = "Диаграмма_plot", reports_indexes
-        self.dynamic_bar_text = "Диаграмма_bar", reports_indexes
+        self.diagram_text = "Диаграмма_"
+        self.dynamic_plot_text = "Диаграмма_plot"
+        self.dynamic_bar_text = "Диаграмма_bar"
+
+        self.diagram_text = "Диаграмма_"
+        for entry in reports_indexes:
+            self.diagram_text += entry
+            self.dynamic_plot_text += entry
+            self.dynamic_bar_text += entry
 
     def save_result_word(self, save_path):  # save word
         save.WordDumper.write_file(save_path, self.dict_word)

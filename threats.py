@@ -57,7 +57,10 @@ class ThreatsReport(graphics.Graphics):
         self.empty_df = pd.DataFrame()  # for dict_word{}
         # self.pie_obj = 0  # graphics
         # self.hist_obj = 0  # graphics
-        self.diagram_text = "Диаграмма_", reports_indexes
+
+        self.diagram_text = "Диаграмма_"
+        for entry in reports_indexes:
+            self.diagram_text += entry
 
     def save_result(self, save_path):  # save excel
         save.ExcelDumper.write_file(save_path, self.dict)
