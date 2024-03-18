@@ -35,7 +35,7 @@ class Graphics:
     @staticmethod
     def dynamic_bar_diagram(df):
         df.plot.bar()
-        # plt.show()
+        plt.show()
         plt.title("Bar_diagram")
         plt.tight_layout()  # Adjust the layout to fit all elements
         buffer = BytesIO()

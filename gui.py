@@ -114,7 +114,7 @@ class Form2(tk.Toplevel):
         for path in range(len(self.urls_list_open)):
             el = self.urls_list_open[path].rfind('/')
             names_ = '/dynamic_' + self.urls_list_open[path][el + 1:]
-            word_str = names_[:-4] + "docx"  # word
+            # word_str = names_[:-4] + "docx"  # word
 
             el_index = names_.rfind('_')  #
             names_index = names_[el_index + 1:-5]  #
@@ -194,17 +194,17 @@ class Form2(tk.Toplevel):
 
         # self.urls_list_save_word.append(self.folder_save + self.filenames_word[path])  # save word
 
-        # if self.dict_values() == 1:
-        #     self.dynamic_th.save_result_th(self.folder_save + self.urls_list_save[-1] + '.xlsx')
-        #     self.dynamic_th.save_result_word(self.urls_list_save_word[obj])
-        #
-        # elif self.dict_values() == 2:
-        #     self.dynamic_ab.save_result_ab(self.folder_save + self.urls_list_save[-1] + '.xlsx')
-        #     self.dynamic_ab.save_result_word(self.urls_list_save_word[obj])
-        #
-        # else:
-        #     output = "Invalid selection"
-        #     print(output)
+        if self.dict_values() == 1:
+            self.dynamic_th.save_result_th(self.folder_save + self.urls_list_save[-1] + '.xlsx')
+            self.dynamic_th.save_result_word(self.folder_save + self.urls_list_save[-1] + '.docx')
+
+        elif self.dict_values() == 2:
+            self.dynamic_ab.save_result_ab(self.folder_save + self.urls_list_save[-1] + '.xlsx')
+            self.dynamic_ab.save_result_word(self.folder_save + self.urls_list_save[-1] + '.docx')
+
+        else:
+            output = "Invalid selection"
+            print(output)
 
         self.info_message("Save", "Files successfully saved")
         self.clear_state()

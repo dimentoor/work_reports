@@ -36,13 +36,14 @@ class Analyzer(graphics.Graphics):
                                 "февраль (по обработанным ранее отчетам)."
 # ANTIVIRUS BASES
         self.dstatuses = 0
-        self.dstatuses_text = "На листе ab_statuses_parts представлена таблица по статусам антивирусных баз за февраль (по обработанным ранее отчетам), а также ее графическое отображение."
+        self.dstatuses_text = "На листе ab_statuses_parts представлена таблица по статусам антивирусных баз за " \
+                              "февраль (по обработанным ранее отчетам), а также ее графическое отображение."
 
         self.dstatuses_sum = 0
-        self.dstatuses_sum_text = "На листе ab_statuses_sum представлена сокращенная таблица по статусам антивирусных баз за февраль (по обработанным ранее отчетам)."
+        self.dstatuses_sum_text = "На листе ab_statuses_sum представлена сокращенная таблица по статусам антивирусных " \
+                                  "баз за февраль (по обработанным ранее отчетам)."
 
         self.empty_df = pd.DataFrame()  # for dict_word{}
-        self.diagram_text = "Диаграмма_"
         self.dynamic_plot_text = "Диаграмма_plot"
         self.dynamic_bar_text = "Диаграмма_bar"
 
@@ -174,6 +175,7 @@ class Analyzer(graphics.Graphics):
         i = 0
         merged_df = report_list[0].types
         for report in report_list[1:]:
+            print('test', report)
             merged_df = pd.merge(merged_df, report.types, on='Тип объекта', how='outer', suffixes=('_x', f'_y{i}'))
             # suffixes=[index for index in gui.Form2.reports_indexes])
         merged_df = merged_df.fillna(0)
