@@ -134,6 +134,7 @@ class Form2(tk.Toplevel):
         print(self.filenames_list)
         print(self.reports_indexes)  #
 
+
         # dynamic_th = analyze.Analyzer(self.reports_indexes)
         # dynamic_ab = analyze.Analyzer(self.reports_indexes)
 
@@ -181,7 +182,7 @@ class Form2(tk.Toplevel):
             output = "Invalid selection"
             print(output)
 
-        mbox.showinfo("Analysis", "Analysis is done!")
+        # mbox.showinfo("Analysis", "Analysis is done!")
         self.database_btn.configure(state='normal')
         self.skip_btn.configure(state='normal')
         self.analyze_btn.configure(state='disabled')
@@ -206,7 +207,7 @@ class Form2(tk.Toplevel):
             output = "Invalid selection"
             print(output)
 
-        self.info_message("Save", "Files successfully saved")
+        # self.info_message("Save", "Files successfully saved")
         self.clear_state()
         self.path_list.delete(0, tk.END)
 

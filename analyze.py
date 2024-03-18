@@ -12,7 +12,7 @@ class Analyzer(graphics.Graphics):
 
     def __init__(self, reports_indexes):
         super().__init__(reports_indexes)  # for parent class
-        # self.samples_list = list()
+
         self.dict = {}
         self.dict_word = {}
 # THREATS
@@ -42,11 +42,11 @@ class Analyzer(graphics.Graphics):
         self.dstatuses_sum = 0
         self.dstatuses_sum_text = "На листе ab_statuses_sum представлена сокращенная таблица по статусам антивирусных " \
                                   "баз за февраль (по обработанным ранее отчетам)."
-
+# BOTH
         self.empty_df = pd.DataFrame()  # for dict_word{}
-        self.dynamic_plot_text = "Диаграмма_plot"
-        self.dynamic_bar_text = "Диаграмма_bar"
 
+        self.dynamic_plot_text = "Диаграмма_plot_"
+        self.dynamic_bar_text = "Диаграмма_bar_"
         self.diagram_text = "Диаграмма_"
         for entry in reports_indexes:
             self.diagram_text += entry
@@ -78,11 +78,11 @@ class Analyzer(graphics.Graphics):
         self.dict_word = {
             self.res_df_text: self.empty_df,  # full df
             self.dblack_list_text: self.dblack_list_word,  # 5 rows
-            self.diagram_text: self.th_create_pie_graphic(),
+            self.diagram_text + self.reports_indexes[0] + "_" + self.reports_indexes[-1]: self.th_create_pie_graphic(),
             self.dtypes_summ_text: self.dtypes_summ,  # full df
-            self.dynamic_bar_text: self.th_create_bar_graphic(),
+            self.dynamic_bar_text + self.reports_indexes[0] + "_" + self.reports_indexes[-1]: self.th_create_bar_graphic(),
             self.dtypes_text: self.dtypes,  # full df
-            self.dynamic_plot_text: self.th_create_plot_graphic()
+            self.dynamic_plot_text + self.reports_indexes[0] + "_" + self.reports_indexes[-1]: self.th_create_plot_graphic()
         }
 
     # def list_of_reports(self):
@@ -175,11 +175,14 @@ class Analyzer(graphics.Graphics):
         i = 0
         merged_df = report_list[0].types
         for report in report_list[1:]:
-            print('test', report)
-            merged_df = pd.merge(merged_df, report.types, on='Тип объекта', how='outer', suffixes=('_x', f'_y{i}'))
-            # suffixes=[index for index in gui.Form2.reports_indexes])
+            suffix = f'_y{i}'
+            report.types = report.types.rename(
+                columns={col: col + suffix for col in report.types.columns if col != 'Тип объекта'})
+            merged_df = pd.merge(merged_df, report.types, on='Тип объекта', how='outer')
+            i += 1
         merged_df = merged_df.fillna(0)
         self.dtypes = merged_df
+
         self.dtypes.index = np.arange(1, len(self.dtypes) + 1)  # new index
 
         return self.dtypes
@@ -213,10 +216,11 @@ class Analyzer(graphics.Graphics):
                      }
 
         self.dict_word = {
-            self.diagram_text: self.ab_create_pie_graphic(),
+            self.diagram_text + self.reports_indexes[0] + "_" + self.reports_indexes[-1]: self.ab_create_pie_graphic(),
             self.dstatuses_sum_text: self.dstatuses_sum,  # full df
             self.dstatuses_text: self.dstatuses,  # full df
-            self.dynamic_plot_text: self.ab_create_plot_graphic()
+            self.dynamic_bar_text + self.reports_indexes[0] + "_" + self.reports_indexes[-1]: self.ab_create_bar_graphic(),
+            self.dynamic_plot_text + self.reports_indexes[0] + "_" + self.reports_indexes[-1]: self.ab_create_plot_graphic()
         }
 
     def ab_dstatuses_summ(self, report_list):  # summ for the selected period
@@ -249,6 +253,7 @@ class Analyzer(graphics.Graphics):
 
         self.dstatuses = pd.concat(objects_list, axis=1, ignore_index=True)
         # self.dstatuses["result"] = self.dstatuses.sum(axis=1, numeric_only=True)  # column "result"
+        print(self.dstatuses)
         return self.dstatuses
 
 # Graphics

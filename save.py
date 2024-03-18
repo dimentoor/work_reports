@@ -43,20 +43,23 @@ class WordDumper:
         for key, value in samples.items():
             document.add_heading(key, level=1)
 
-            if isinstance(value, pd.DataFrame):   # if df -> add table in docx else add text
+            if isinstance(value, pd.DataFrame):
                 if not value.empty:
+                    # Создаем таблицу
                     table = document.add_table(rows=value.shape[0] + 1, cols=value.shape[1])
+                    # Устанавливаем стиль 'Table Grid' для отображения границ
+                    table.style = 'Table Grid'
+                    # Добавляем заголовки столбцов
                     for col_num, col_name in enumerate(value.columns):
                         table.cell(0, col_num).text = col_name
+                    # Добавляем данные в таблицу
                     for row_num in range(value.shape[0]):
                         for col_num in range(value.shape[1]):
                             table.cell(row_num + 1, col_num).text = str(value.iloc[row_num, col_num])
                 else:
-                    document.add_paragraph(str("Данные приведены в excel файле"))  # write file name (excel)?
-
-            elif isinstance(value, BytesIO):  # if BytesIO -> add image
+                    document.add_paragraph("Данные приведены в excel файле")
+            elif isinstance(value, BytesIO):
                 document.add_picture(value, width=Inches(4))
-                # document.add_paragraph(str(value))
             else:
                 document.add_paragraph(str(value))
 

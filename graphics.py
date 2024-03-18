@@ -35,13 +35,12 @@ class Graphics:
     @staticmethod
     def dynamic_bar_diagram(df):
         df.plot.bar()
-        plt.show()
         plt.title("Bar_diagram")
         plt.tight_layout()  # Adjust the layout to fit all elements
         buffer = BytesIO()
         plt.savefig(buffer, format='png')
-        buffer.seek(0)
         plt.close()
+        buffer.seek(0)
         # plt.show()
         return buffer
 
@@ -51,14 +50,12 @@ class Graphics:
         df.plot()
         plt.legend(fontsize=7, bbox_to_anchor=(1, 0.6))
         # plt.xticks(rotation=90)
-        plt.show()
         plt.title("Plot_diagram")
         plt.tight_layout()  # Adjust the layout to fit all elements
         buffer = BytesIO()
         plt.savefig(buffer, format='png')
+        plt.close()  # Закрываем график после сохранения
         buffer.seek(0)
-        plt.close()
-        # plt.show()
         return buffer
 
     # преобразует df из analyze. Меняем индексы на полученные из имен открытых отчетов
