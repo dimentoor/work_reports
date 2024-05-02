@@ -28,15 +28,17 @@ class AntivirusBases(graphics.Graphics):
         self.statuses_num = 0
 
         self.users_statuses = 0
-        self.users_statuses_text = "На листе users_statuses_sample представлено распределение устройств пользователей " \
-                                   "по статусам антивирусных баз."
+        self.users_statuses_text = "На листе users_statuses_sample представлено распределение имен устройств " \
+                                   "пользователей и групп, в которых они находятся по статусам антивирусных баз."
 
         self.pvs_sample = 0
-        self.pvs_sample_text = "На листе program_version_status_sample представлено соотношение программы с " \
-                               "установленными версиями, а также статусами антивирусных баз по каждой из версий."
+        self.pvs_sample_text = "На листе program_version_status_sample отображена информация об установленных " \
+                               "антивирусных программах (в какой группе находятся, какие статусы антивирусных баз " \
+                               "имеют, количество каждой из программ)."
 
         self.unique = 0
-        self.unique_text = "На листе unique_sample представлено количество уникальных полей по каждому столбцу таблицы."
+        self.unique_text = "Отчет об используемых антивирусных базах \n\n На листе unique_sample представлено " \
+                           "количество уникальных полей по каждому столбцу исходной таблицы."
 
         self.empty_df = pd.DataFrame()  # for dict_word{}
         self.pie_obj = 0  # graphics
@@ -93,13 +95,21 @@ class AntivirusBases(graphics.Graphics):
         return self.pvs_sample
 
     def users_statuses_sample(self):
+        # series
+        # self.users_statuses = pd.DataFrame(data=self.open_obj.table[
+        #     ['Группа', 'Статус антивирусных баз', 'Устройство']])
+        # self.users_statuses = self.users_statuses.groupby([
+        #     'Статус антивирусных баз', 'Группа'])[['Устройство']].value_counts()
+        #
+        # self.users_statuses.name = 'Количество'
+
+        # dataframe
         self.users_statuses = pd.DataFrame(data=self.open_obj.table[
             ['Группа', 'Статус антивирусных баз', 'Устройство']])
         self.users_statuses = self.users_statuses.groupby([
-            'Статус антивирусных баз', 'Группа'])[['Устройство']].value_counts()
+            'Статус антивирусных баз', 'Группа'])[['Устройство']].value_counts().reset_index(name='Количество')
 
-        self.users_statuses.name = 'Количество'
-
+        self.users_statuses = self.users_statuses.drop(columns=['Количество'])
         return self.users_statuses
 
     def statuses_sample(self):

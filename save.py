@@ -3,7 +3,7 @@ import json
 import database
 import docx
 from io import BytesIO
-from docx.shared import Inches
+from docx.shared import Inches, Pt
 
 
 class ExcelLoader:
@@ -25,9 +25,24 @@ class ExcelDumper:
     # write file
     @staticmethod
     def write_file(filename, samples: dict):
-        with pd.ExcelWriter(filename) as writer:
+        # with pd.ExcelWriter(filename) as writer:
+        #     for sample_name, sample in samples.items():
+        #         sample.to_excel(writer, sheet_name=sample_name)
+        # print("Wrote to {}.".format(filename))
+        with pd.ExcelWriter(filename, engine='xlsxwriter') as writer:
             for sample_name, sample in samples.items():
-                sample.to_excel(writer, sheet_name=sample_name)
+                try:
+                    sample.to_excel(writer, sheet_name=sample_name, index=False)
+                    # Получаем объект рабочего листа
+                    worksheet = writer.sheets[sample_name]
+                    # Устанавливаем ширину столбцов по содержимому
+                    for i, col in enumerate(sample.columns):
+                        column_len = max(sample[col].astype(str).str.len().max(),
+                                         len(col)) + 2  # Добавляем небольшой отступ
+                        worksheet.set_column(i, i, column_len)
+
+                except AttributeError:
+                    sample.to_excel(writer, sheet_name=sample_name)
         print("Wrote to {}.".format(filename))
 
 
@@ -51,7 +66,13 @@ class WordDumper:
                     table.style = 'Table Grid'
                     # Добавляем заголовки столбцов
                     for col_num, col_name in enumerate(value.columns):
-                        table.cell(0, col_num).text = col_name
+                        cell = table.cell(0, col_num)
+                        cell.text = col_name
+                        # Выделяем текст жирным
+                        run = cell.paragraphs[0].runs[0]
+                        run.bold = True
+                        # Устанавливаем размер шрифта
+                        run.font.size = Pt(10)
                     # Добавляем данные в таблицу
                     for row_num in range(value.shape[0]):
                         for col_num in range(value.shape[1]):
@@ -88,7 +109,6 @@ class MongoDumper:
             collection_id = database.Mongo.add_doc(collection, json.loads(tmp))
 
         print("ADD to database {}.".format(collection_name))
-
 
 # with open('{}.json'.format(sample_name), 'w') as outfile:
 #     json.dump(tmp, outfile, ensure_ascii=False, indent=4, sort_keys=True)

@@ -31,29 +31,33 @@ class ThreatsReport(graphics.Graphics):
         self.dict_word = {}
 
         self.black_list = 0
-        self.black_list_text = "На листе black_list_sample представлено соотношение имени устройства нарушителя, " \
-                               "IP-адреса его устройства с количеством нарушений цветом выделены топ)."
-        self.users = 0
-        self.users_text = "На листе users_sample представлено соотношение имени устройства пользователя, его учетной " \
-                          "записи, IP-адреса с обнаруженным объектом, его типом и количественным представлением."
-        self.threat_types = 0
-        self.threat_types_text = "На листе threat_types_sample представлено распределение обнаруженных объектов по " \
-                                 "типам объекта и их количество."
+        self.black_list_text = "На листе black_list_sample представлена информация о пользователе (имя учетной " \
+                               "записи, IP-адрес) вместе с количеством зафиксированных антивирусным программным " \
+                               "обеспечением нарушений."
 
+        self.users = 0
+        self.users_text = "На листе users_sample представлена информация о пользователе (имя устройства, IP-адрес, " \
+                          "имя учетной записи), а также обнаруженные у них вредоносные объекты, их тип и количество."
+
+        self.threat_types = 0
+        self.threat_types_text = "На листе threat_types_sample представлены выявленные вредоносные объекты с " \
+                                 "указанием их количества, распределенные по типам."
         self.types = 0
-        self.types_text = "На листе types_sample представлены виды типов объекта и их количество."
+        self.types_text = "На листе types_sample представлены типы вредоносных объектов и их количество."
         self.types_num = 0
 
         self.unique = 0
-        self.unique_text = "На листе unique_sample представлено количество уникальных полей по каждому столбцу таблицы."
+        self.unique_text = "Отчет об угрозах \n\n На листе unique_sample представлено количество уникальных полей по " \
+                           "каждому столбцу исходной таблицы."
 
         # self.black_list_parts = 0
 
         self.weighted_users = 0
         self.weighted_users_word = 0  # only for cut df
-        self.weighted_users_text = "На листе weighted_users_sample представлен список устройств и условное число " \
-                                   "“очков”, полученных в " \
-                                   "результате вычисления следующей формулы: количество угроз * вес типа угрозы."
+        self.weighted_users_text = "На листе weighted_users_sample представлена информация о пользователе (имя " \
+                                   "учетной записи, IP-адрес) и условное число “штрафных баллов”, полученных в " \
+                                   "результате вычисления следующей формулы: +=количество угроз * вес типа угрозы."
+
         self.empty_df = pd.DataFrame()  # for dict_word{}
         # self.pie_obj = 0  # graphics
         # self.hist_obj = 0  # graphics
@@ -127,7 +131,7 @@ class ThreatsReport(graphics.Graphics):
         self.users = self.users.groupby(['Учетная запись', 'Устройство'])[
             ['IP-адрес', 'Обнаруженный объект', 'Тип объекта']].value_counts()  # type - series
         # .reset_index(name='Count')  # type - dataframe
-        self.users.name = 'Count'
+        self.users.name = 'Количество'
 
         # Total_Weighted_Count
         self.weighted_users = pd.DataFrame(data=self.open_obj.table[

@@ -1,7 +1,10 @@
 import tkinter as tk
 from tkinter import filedialog
-from datetime import datetime
+from tkinter import *
+from tkinter import ttk
 from tkinter import messagebox as mbox
+from datetime import datetime
+
 import copy
 
 import graphics
@@ -25,6 +28,15 @@ class Form2(tk.Toplevel):
 
     def __init__(self, parent, dynamic_dict):
         super().__init__(parent)
+
+        screen_width = self.winfo_screenwidth()
+        screen_height = self.winfo_screenheight()
+        # Рассчитать координаты для центрирования окна
+        x = (screen_width - 400) // 2
+        y = (screen_height - 600) // 2
+        # Установить координаты окна
+        self.geometry('{}x{}+{}+{}'.format(200, 540, x, y))
+
         self.dynamic = dynamic_dict
         self.var = tk.IntVar()
         self.urls_list_open = list()
@@ -66,17 +78,17 @@ class Form2(tk.Toplevel):
         # pack
         label_1.pack(padx=10, pady=10)
 
-        self.open_btn.pack()
-        self.path_list.pack()  #
+        self.open_btn.pack(fill=X)
+        self.path_list.pack(fill=X)
 
         label_2.pack(padx=10, pady=10)
         for radio in self.radios:
-            radio.pack(padx=10, anchor=tk.W)
+            radio.pack(padx=10, anchor=tk.CENTER)
 
-        self.analyze_btn.pack()
-        self.database_btn.pack()
-        self.skip_btn.pack()
-        self.save_btn.pack()
+        self.analyze_btn.pack(fill=X)
+        self.database_btn.pack(fill=X)
+        self.skip_btn.pack(fill=X)
+        self.save_btn.pack(fill=X)
         self.close_btn.pack()
 
     def clear_state(self):
@@ -251,6 +263,15 @@ class App(tk.Tk):
 
     def __init__(self, dict_report):
         super().__init__()
+
+        screen_width = self.winfo_screenwidth()
+        screen_height = self.winfo_screenheight()
+        # Рассчитать координаты для центрирования окна
+        x = (screen_width - 400) // 2
+        y = (screen_height - 600) // 2
+        # Установить координаты окна
+        self.geometry('{}x{}+{}+{}'.format(200, 540, x, y))
+
         self.dict = dict_report
         self.var = tk.IntVar()
         self.urls_list_open = list()
@@ -281,7 +302,7 @@ class App(tk.Tk):
         # labels
         label_1 = tk.Label(self, text="Select file(s) for analyze")
         label_2 = tk.Label(self, text="Select report type")
-        self.dynamic_btn.pack()
+        self.dynamic_btn.pack(fill=X)
 
         # radiobutton
         self.radios = [tk.Radiobutton(self, text=key, value=value,
@@ -293,19 +314,19 @@ class App(tk.Tk):
         # pack
         label_1.pack(padx=10, pady=10)
 
-        self.open_btn.pack()
-        self.path_list.pack()  #
+        self.open_btn.pack(fill=X)
+        self.path_list.pack(fill=X)  #
 
         label_2.pack(padx=10, pady=10)
         for radio in self.radios:
-            radio.pack(padx=10, anchor=tk.W)
+            radio.pack(padx=10, anchor=tk.CENTER)
 
         self.path_list.pack()  #
-        self.analyze_btn.pack()
-        self.database_btn.pack()
-        self.skip_btn.pack()
-        self.save_btn.pack()
-        self.word_report_btn.pack()
+        self.analyze_btn.pack(fill=X)
+        self.database_btn.pack(fill=X)
+        self.skip_btn.pack(fill=X)
+        self.save_btn.pack(fill=X)
+        # self.word_report_btn.pack()
         self.close_btn.pack()
 
     def clear_state(self):
