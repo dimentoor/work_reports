@@ -6,7 +6,8 @@ dict_report = {
     "Program_versions": 2,
     "Antivirus_bases": 3,
     # "Network_attacks": 4,
-    "Installed_software": 5}
+    "Installed_software": 5
+}
 
 dynamic_dict = {
     "Threats": 1,

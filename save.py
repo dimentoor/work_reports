@@ -80,7 +80,7 @@ class WordDumper:
                 else:
                     document.add_paragraph("Данные приведены в excel файле")
             elif isinstance(value, BytesIO):
-                document.add_picture(value, width=Inches(4))
+                document.add_picture(value, width=Inches(4))  # picture width
             else:
                 document.add_paragraph(str(value))
 
@@ -109,6 +109,3 @@ class MongoDumper:
             collection_id = database.Mongo.add_doc(collection, json.loads(tmp))
 
         print("ADD to database {}.".format(collection_name))
-
-# with open('{}.json'.format(sample_name), 'w') as outfile:
-#     json.dump(tmp, outfile, ensure_ascii=False, indent=4, sort_keys=True)

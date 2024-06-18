@@ -56,7 +56,7 @@ class ThreatsReport(graphics.Graphics):
         self.weighted_users_word = 0  # only for cut df
         self.weighted_users_text = "На листе weighted_users_sample представлена информация о пользователе (имя " \
                                    "учетной записи, IP-адрес) и условное число “штрафных баллов”, полученных в " \
-                                   "результате вычисления следующей формулы: +=количество угроз * вес типа угрозы."
+                                   "результате вычисления произведения количества угроз на вес типа угрозы."
 
         self.empty_df = pd.DataFrame()  # for dict_word{}
         # self.pie_obj = 0  # graphics

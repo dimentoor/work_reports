@@ -22,6 +22,7 @@ import main
 class Form2(tk.Toplevel):
     threats_objects = list()
     antivirus_bases_objects = list()
+
     # dynamic_th = analyze.Analyzer(reports_indexes=Form2.get_file_names())
     # dynamic_ab = analyze.Analyzer()
     # reports_indexes = list()
@@ -29,13 +30,15 @@ class Form2(tk.Toplevel):
     def __init__(self, parent, dynamic_dict):
         super().__init__(parent)
 
+        self.title("Окно анализа динамических отчетов")  # form title
+
         screen_width = self.winfo_screenwidth()
         screen_height = self.winfo_screenheight()
         # Рассчитать координаты для центрирования окна
         x = (screen_width - 400) // 2
         y = (screen_height - 600) // 2
         # Установить координаты окна
-        self.geometry('{}x{}+{}+{}'.format(200, 540, x, y))
+        self.geometry('{}x{}+{}+{}'.format(400, 540, x, y))
 
         self.dynamic = dynamic_dict
         self.var = tk.IntVar()
@@ -54,20 +57,21 @@ class Form2(tk.Toplevel):
         self.dynamic_ab = analyze.Analyzer(self.reports_indexes)
 
         # buttons
-        self.open_btn = tk.Button(self, text="Open file(s)", command=self.get_file_names)
-        self.analyze_btn = tk.Button(self, text="Analyze", command=self.report_create)
+        self.open_btn = tk.Button(self, text="Загрузить файл", command=self.get_file_names)
+        self.analyze_btn = tk.Button(self, text="Анализировать", command=self.report_create)
         self.analyze_btn.configure(state='disabled')
-        self.save_btn = tk.Button(self, text="Save report(s)", command=self.save_files)
+        self.save_btn = tk.Button(self, text="Сохранить отчет", command=self.save_files)
         self.save_btn.configure(state='disabled')
-        self.database_btn = tk.Button(self, text="Upload to database", command=self.add_to_database)
+        self.database_btn = tk.Button(self, text="Добавить отчет в базу данных", command=self.add_to_database)
         self.database_btn.configure(state='disabled')
-        self.close_btn = tk.Button(self, text="Close", command=self.destroy)
-        self.skip_btn = tk.Button(self, text="Skip upload to database", command=self.skip_step)
+        self.skip_btn = tk.Button(self, text="Не добавлять отчет в базу данных", command=self.skip_step)
         self.skip_btn.configure(state='disabled')
+        self.clear_btn = tk.Button(self, text="Очистить", command=self.clear_state)
+        self.close_btn = tk.Button(self, text="Закрыть", command=self.destroy)
 
         # labels
-        label_1 = tk.Label(self, text="Select file(s) for analyze")
-        label_2 = tk.Label(self, text="Select report type")
+        label_1 = tk.Label(self, text="Загрузите файлы для анализа")
+        label_2 = tk.Label(self, text="Выберите вариант анализа")
 
         # radiobutton
         self.radios = [tk.Radiobutton(self, text=key, value=value,
@@ -89,6 +93,7 @@ class Form2(tk.Toplevel):
         self.database_btn.pack(fill=X)
         self.skip_btn.pack(fill=X)
         self.save_btn.pack(fill=X)
+        self.clear_btn.pack()
         self.close_btn.pack()
 
     def clear_state(self):
@@ -111,6 +116,8 @@ class Form2(tk.Toplevel):
 
         for radio in self.radios:
             radio.deselect()
+
+        self.path_list.delete(0, tk.END)
 
     def skip_step(self):
         self.save_btn.configure(state='normal')
@@ -140,22 +147,21 @@ class Form2(tk.Toplevel):
         # self.urls_list_save.append(self.filenames_list[0][0:len(
         #     self.filenames_list[0]) - 5] + "-" + self.filenames_list[-1][-9:-5])
 
-            # if word_str not in self.filenames_word:
-            #     self.filenames_word.append(word_str)
+        # if word_str not in self.filenames_word:
+        #     self.filenames_word.append(word_str)
 
         print(self.filenames_list)
         print(self.reports_indexes)  #
-
 
         # dynamic_th = analyze.Analyzer(self.reports_indexes)
         # dynamic_ab = analyze.Analyzer(self.reports_indexes)
 
         if len(self.filenames_list) == 0:
-            self.error_message("Open files", "Please select a file")
+            mbox.showerror("Open files", "Please select a file")
         else:
             self.urls_list_save.append(self.filenames_list[0][0:len(
                 self.filenames_list[0]) - 5] + "-" + self.filenames_list[-1][-9:-5])
-            self.info_message("Open files", "Files successfully opened")
+            mbox.showinfo("Open files", "Files successfully opened")
             self.analyze_btn.configure(state='normal')
             for radio in self.radios:
                 radio.configure(state='normal')
@@ -163,91 +169,100 @@ class Form2(tk.Toplevel):
         return self.reports_indexes
 
     def report_create(self):
-        if self.dict_values() == 1:
-            # THREATS
-            for path in self.urls_list_open:
-                Form2.threats_objects.append(threats.ThreatsReport(path, threats.th_sheet_name, self.reports_indexes))
-            # (rework)  rewrite like same as above
-            for obj in range(len(Form2.threats_objects)):
-                Form2.threats_objects[obj].all_samples_threats()
-            self.dynamic_th.all_samples_th(Form2.threats_objects)
+        try:
+            if self.dict_values() == 1:
+                # THREATS
+                for path in self.urls_list_open:
+                    Form2.threats_objects.append(threats.ThreatsReport(path, threats.th_sheet_name, self.reports_indexes))
+                # (rework)  rewrite like same as above
+                for obj in range(len(Form2.threats_objects)):
+                    Form2.threats_objects[obj].all_samples_threats()
+                self.dynamic_th.all_samples_th(Form2.threats_objects)
 
-            # tmp = Form2.dynamic_th
-            # graphics_th = graphics.Graphics(tmp, self.dict_values(), self.reports_indexes)  # graphics
-            # graphics_th.all_graphics_dynamic()
+                # tmp = Form2.dynamic_th
+                # graphics_th = graphics.Graphics(tmp, self.dict_values(), self.reports_indexes)  # graphics
+                # graphics_th.all_graphics_dynamic()
 
-        elif self.dict_values() == 2:
-            # ANTIVIRUS_BASES
-            for path in self.urls_list_open:
-                Form2.antivirus_bases_objects.append(antivirus_bases.AntivirusBases(
-                    path, antivirus_bases.ab_sheet_name, self.reports_indexes))
-            # (rework) rewrite like same as above
-            for obj in range(len(Form2.antivirus_bases_objects)):
-                Form2.antivirus_bases_objects[obj].all_samples_antivirus_bases()
-            self.dynamic_ab.all_samples_ab(Form2.antivirus_bases_objects)
+            elif self.dict_values() == 2:
+                # ANTIVIRUS_BASES
+                for path in self.urls_list_open:
+                    Form2.antivirus_bases_objects.append(antivirus_bases.AntivirusBases(
+                        path, antivirus_bases.ab_sheet_name, self.reports_indexes))
+                # (rework) rewrite like same as above
+                for obj in range(len(Form2.antivirus_bases_objects)):
+                    Form2.antivirus_bases_objects[obj].all_samples_antivirus_bases()
+                self.dynamic_ab.all_samples_ab(Form2.antivirus_bases_objects)
 
-            # tmp = Form2.dynamic_ab
-            # graphics_ab = graphics.Graphics(tmp, self.dict_values(), self.reports_indexes)  # graphics
-            # graphics_ab.all_graphics_dynamic()
+                # tmp = Form2.dynamic_ab
+                # graphics_ab = graphics.Graphics(tmp, self.dict_values(), self.reports_indexes)  # graphics
+                # graphics_ab.all_graphics_dynamic()
 
-        else:
-            output = "Invalid selection"
-            print(output)
+            else:
+                output = "Invalid selection"
+                print(output)
 
-        # mbox.showinfo("Analysis", "Analysis is done!")
-        self.database_btn.configure(state='normal')
-        self.skip_btn.configure(state='normal')
-        self.analyze_btn.configure(state='disabled')
-        for radio in self.radios:
-            radio.configure(state='disabled')
+            # mbox.showinfo("Analysis", "Analysis is done!")
+            self.database_btn.configure(state='normal')
+            self.skip_btn.configure(state='normal')
+            self.analyze_btn.configure(state='disabled')
+            for radio in self.radios:
+                radio.configure(state='disabled')
+        except Exception as e:
+            mbox.showerror("Error", f"An error occurred: {str(e)}")  # new
 
     def save_files(self):
-        self.folder_save = filedialog.askdirectory(title='Choose a directory')
-        print(self.folder_save + self.urls_list_save[-1])
+        try:
+            self.folder_save = filedialog.askdirectory(title='Choose a directory')
+            print(self.folder_save + self.urls_list_save[-1])
 
-        # self.urls_list_save_word.append(self.folder_save + self.filenames_word[path])  # save word
+            # self.urls_list_save_word.append(self.folder_save + self.filenames_word[path])  # save word
 
-        if self.dict_values() == 1:
-            self.dynamic_th.save_result_th(self.folder_save + self.urls_list_save[-1] + '.xlsx')
-            self.dynamic_th.save_result_word(self.folder_save + self.urls_list_save[-1] + '.docx')
+            if self.dict_values() == 1:
+                self.dynamic_th.save_result_th(self.folder_save + self.urls_list_save[-1] + '.xlsx')
+                self.dynamic_th.save_result_word(self.folder_save + self.urls_list_save[-1] + '.docx')
 
-        elif self.dict_values() == 2:
-            self.dynamic_ab.save_result_ab(self.folder_save + self.urls_list_save[-1] + '.xlsx')
-            self.dynamic_ab.save_result_word(self.folder_save + self.urls_list_save[-1] + '.docx')
+            elif self.dict_values() == 2:
+                self.dynamic_ab.save_result_ab(self.folder_save + self.urls_list_save[-1] + '.xlsx')
+                self.dynamic_ab.save_result_word(self.folder_save + self.urls_list_save[-1] + '.docx')
 
-        else:
-            output = "Invalid selection"
-            print(output)
+            else:
+                output = "Invalid selection"
+                print(output)
 
-        # self.info_message("Save", "Files successfully saved")
-        self.clear_state()
-        self.path_list.delete(0, tk.END)
+            mbox.showinfo("Save", "Files successfully saved")
+            self.clear_state()
+            # self.path_list.delete(0, tk.END)
+        except Exception as e:
+            mbox.showerror("Error", f"An error occurred: {str(e)}")  # new
 
     def add_to_database(self):
-        if self.dict_values() == 1:
-            save.MongoDumper.df_to_json(self.dynamic_th.dict,
-                                        '{}_{}'.format(self.urls_list_save[0], datetime.now().strftime("/%S")))
+        try:
+            if self.dict_values() == 1:
+                save.MongoDumper.df_to_json(self.dynamic_th.dict,
+                                            '{}_{}'.format(self.urls_list_save[0], datetime.now().strftime("/%S")))
 
-        elif self.dict_values() == 2:
-            save.MongoDumper.df_to_json(self.dynamic_ab.dict,
-                                        '{}_{}'.format(self.urls_list_save[0], datetime.now().strftime("/%S")))
+            elif self.dict_values() == 2:
+                save.MongoDumper.df_to_json(self.dynamic_ab.dict,
+                                            '{}_{}'.format(self.urls_list_save[0], datetime.now().strftime("/%S")))
 
-        else:
-            output = "Invalid selection"
-            print(output)
+            else:
+                output = "Invalid selection"
+                print(output)
 
-        self.skip_btn.configure(state='disabled')
-        self.save_btn.configure(state='normal')
+            self.skip_btn.configure(state='disabled')
+            self.save_btn.configure(state='normal')
 
-        self.info_message("Database", "Files successfully added to database")
+            mbox.showinfo("Database", "Files successfully added to database")
+        except Exception as e:
+            mbox.showerror("Error", f"An error occurred: {str(e)}")  # new
 
-    @staticmethod
-    def info_message(title, message):
-        mbox.showinfo(title, message)
-
-    @staticmethod
-    def error_message(title, message):
-        mbox.showerror(title, message)
+    # @staticmethod
+    # def info_message(title, message):
+    #     mbox.showinfo(title, message)
+    #
+    # @staticmethod
+    # def error_message(title, message):
+    #     mbox.showerror(title, message)
 
 
 # main form
@@ -264,13 +279,15 @@ class App(tk.Tk):
     def __init__(self, dict_report):
         super().__init__()
 
+        self.title("Главное окно")  # form title
+
         screen_width = self.winfo_screenwidth()
         screen_height = self.winfo_screenheight()
         # Рассчитать координаты для центрирования окна
         x = (screen_width - 400) // 2
         y = (screen_height - 600) // 2
         # Установить координаты окна
-        self.geometry('{}x{}+{}+{}'.format(200, 540, x, y))
+        self.geometry('{}x{}+{}+{}'.format(400, 540, x, y))
 
         self.dict = dict_report
         self.var = tk.IntVar()
@@ -285,23 +302,25 @@ class App(tk.Tk):
         self.reports_indexes = list()  # graphics description
 
         # buttons
-        self.open_btn = tk.Button(self, text="Open file(s)", command=self.get_file_names)
-        self.dynamic_btn = tk.Button(self, text="Dynamic report", command=self.dynamic_report)
-        self.analyze_btn = tk.Button(self, text="Analyze", command=self.report_create)
+        self.open_btn = tk.Button(self, text="Загрузить файл", command=self.get_file_names)
+        self.dynamic_btn = tk.Button(self, text="Динамический отчет", command=self.dynamic_report)
+        self.analyze_btn = tk.Button(self, text="Анализировать", command=self.report_create)
         self.analyze_btn.configure(state='disabled')
-        self.save_btn = tk.Button(self, text="Save report(s)", command=self.save_files)
+        self.save_btn = tk.Button(self, text="Сохранить отчет", command=self.save_files)
         self.save_btn.configure(state='disabled')
-        self.database_btn = tk.Button(self, text="Upload to database", command=self.add_to_database)
+        self.database_btn = tk.Button(self, text="Добавить отчет в базу данных", command=self.add_to_database)
         self.database_btn.configure(state='disabled')
-        self.close_btn = tk.Button(self, text="Close", command=self.destroy)
-        self.skip_btn = tk.Button(self, text="Skip upload to database", command=self.skip_step)
+        self.skip_btn = tk.Button(self, text="Не добавлять отчет в базу данных", command=self.skip_step)
         self.skip_btn.configure(state='disabled')
-        self.word_report_btn = tk.Button(self, text="Create .docx file", command=self.destroy)  # in work | unite all word doc into one при нижитии открывается окно, в котором можно выбрать документы и потом объединить их
+        self.clear_btn = tk.Button(self, text="Очистить", command=self.clear_state)
+        self.close_btn = tk.Button(self, text="Закрыть", command=self.destroy)
+        self.word_report_btn = tk.Button(self, text="Create .docx file",
+                                         command=self.destroy)  # in work | unite all word doc into one при нажатии открывается окно, в котором можно выбрать документы и потом объединить их
         self.word_report_btn.configure(state='disabled')  # in work
 
         # labels
-        label_1 = tk.Label(self, text="Select file(s) for analyze")
-        label_2 = tk.Label(self, text="Select report type")
+        label_1 = tk.Label(self, text="Загрузите файлы для анализа")
+        label_2 = tk.Label(self, text="Выберите вариант анализа")
         self.dynamic_btn.pack(fill=X)
 
         # radiobutton
@@ -327,6 +346,7 @@ class App(tk.Tk):
         self.skip_btn.pack(fill=X)
         self.save_btn.pack(fill=X)
         # self.word_report_btn.pack()
+        self.clear_btn.pack()
         self.close_btn.pack()
 
     def clear_state(self):
@@ -354,6 +374,8 @@ class App(tk.Tk):
 
         for radio in self.radios:
             radio.deselect()
+
+        self.path_list.delete(0, tk.END)
 
     def skip_step(self):
         self.save_btn.configure(state='normal')
@@ -384,164 +406,177 @@ class App(tk.Tk):
                 self.filenames_word.append(word_str)
 
         if len(self.filenames_list) == 0:
-            self.error_message("Open files", "Please select a file")
+            mbox.showerror("Open files", "Please select a file")
         else:
-            self.info_message("Open files", "Files successfully opened")
+            mbox.showinfo("Open files", "Files successfully opened")
             self.analyze_btn.configure(state='normal')
             for radio in self.radios:
                 radio.configure(state='normal')
 
     def report_create(self):
-        if self.dict_values() == 1:
-            # THREATS
-            print(len(self.urls_list_open))
-            for index, path in enumerate(self.urls_list_open):
-                App.threats_objects.append(threats.ThreatsReport(path, threats.th_sheet_name, self.reports_indexes[index]))
-            for obj in range(len(App.threats_objects)):
-                App.threats_objects[obj].all_samples_threats()
+        try:
+            if self.dict_values() == 1:
+                # THREATS
+                print(len(self.urls_list_open))
+                for index, path in enumerate(self.urls_list_open):
+                    App.threats_objects.append(
+                        threats.ThreatsReport(path, threats.th_sheet_name, self.reports_indexes[index]))
+                for obj in range(len(App.threats_objects)):
+                    App.threats_objects[obj].all_samples_threats()
 
-            # tmp = copy.deepcopy(App.threats_objects)
-            # graphics_th = graphics.Graphics(tmp, self.dict_values(), self.reports_indexes)  # graphics
-            # graphics_th.all_graphics()
+                # tmp = copy.deepcopy(App.threats_objects)
+                # graphics_th = graphics.Graphics(tmp, self.dict_values(), self.reports_indexes)  # graphics
+                # graphics_th.all_graphics()
 
-            # test new word report || can be transformed into func which create word report on button click
-            # for obj in range(len(App.threats_objects)):
-            #     App.threats_objects[obj].create_word_report()
-            # return  # test
+                # test new word report || can be transformed into func which create word report on button click
+                # for obj in range(len(App.threats_objects)):
+                #     App.threats_objects[obj].create_word_report()
+                # return  # test
 
-        elif self.dict_values() == 2:
-            # PROGRAM_VERSIONS
-            for path in self.urls_list_open:
-                App.program_versions_objects.append(program_versions.ProgramVersions(
-                    path, program_versions.pv_sheet_name))
-            for obj in range(len(App.program_versions_objects)):
-                App.program_versions_objects[obj].all_samples_program_versions()
-            # return  # test
+            elif self.dict_values() == 2:
+                # PROGRAM_VERSIONS
+                for path in self.urls_list_open:
+                    App.program_versions_objects.append(program_versions.ProgramVersions(
+                        path, program_versions.pv_sheet_name))
+                for obj in range(len(App.program_versions_objects)):
+                    App.program_versions_objects[obj].all_samples_program_versions()
+                # return  # test
 
-        elif self.dict_values() == 3:
-            # ANTIVIRUS_BASES
-            for index, path in enumerate(self.urls_list_open):
-                App.antivirus_bases_objects.append(antivirus_bases.AntivirusBases(path, antivirus_bases.ab_sheet_name, self.reports_indexes[index]))
-            for obj in range(len(App.antivirus_bases_objects)):
-                App.antivirus_bases_objects[obj].all_samples_antivirus_bases()
+            elif self.dict_values() == 3:
+                # ANTIVIRUS_BASES
+                for index, path in enumerate(self.urls_list_open):
+                    App.antivirus_bases_objects.append(
+                        antivirus_bases.AntivirusBases(path, antivirus_bases.ab_sheet_name,
+                                                       self.reports_indexes[index]))
+                for obj in range(len(App.antivirus_bases_objects)):
+                    App.antivirus_bases_objects[obj].all_samples_antivirus_bases()
 
-            # tmp = copy.deepcopy(App.antivirus_bases_objects)
-            # graphics_ab = graphics.Graphics(tmp, self.dict_values(), self.reports_indexes)  # graphics
-            # graphics_ab.all_graphics()
+                # tmp = copy.deepcopy(App.antivirus_bases_objects)
+                # graphics_ab = graphics.Graphics(tmp, self.dict_values(), self.reports_indexes)  # graphics
+                # graphics_ab.all_graphics()
 
-            # test new word report || can be transformed into func which create word report on button click
-            # for obj in range(len(App.antivirus_bases_objects)):
-            #     App.antivirus_bases_objects[obj].create_word_report()
-            # return  # test
+                # test new word report || can be transformed into func which create word report on button click
+                # for obj in range(len(App.antivirus_bases_objects)):
+                #     App.antivirus_bases_objects[obj].create_word_report()
+                # return  # test
 
-        elif self.dict_values() == 4:
-            # NETWORK_ATTACKS
-            for path in self.urls_list_open:
-                App.network_attacks_objects.append(network_attacks.NetworkAttacks(path, network_attacks.na_sheet_name))
-            for obj in range(len(App.network_attacks_objects)):
-                App.network_attacks_objects[obj].all_samples_network_attack()
+            elif self.dict_values() == 4:
+                # NETWORK_ATTACKS
+                for path in self.urls_list_open:
+                    App.network_attacks_objects.append(
+                        network_attacks.NetworkAttacks(path, network_attacks.na_sheet_name))
+                for obj in range(len(App.network_attacks_objects)):
+                    App.network_attacks_objects[obj].all_samples_network_attack()
 
-        elif self.dict_values() == 5:  # new
-            # INSTALLED_SOFTWARE
-            for path in self.urls_list_open:
-                App.installed_software_objects.append(installed_software.InstalledSoftware(
-                    path, installed_software.is_sheet_name))
-            for obj in range(len(App.installed_software_objects)):
-                App.installed_software_objects[obj].all_samples_installed_software()
-        else:
-            output = "Invalid selection"
-            print(output)
+            elif self.dict_values() == 5:  # new
+                # INSTALLED_SOFTWARE
+                for path in self.urls_list_open:
+                    App.installed_software_objects.append(installed_software.InstalledSoftware(
+                        path, installed_software.is_sheet_name))
+                for obj in range(len(App.installed_software_objects)):
+                    App.installed_software_objects[obj].all_samples_installed_software()
+            else:
+                output = "Invalid selection"
+                print(output)
 
-        mbox.showinfo("Analysis", "Analysis is done!")
-        self.database_btn.configure(state='normal')
-        self.skip_btn.configure(state='normal')
-        self.analyze_btn.configure(state='disabled')
-        self.dynamic_btn.configure(state='disabled')
-        for radio in self.radios:
-            radio.configure(state='disabled')
+            mbox.showinfo("Analysis", "Analysis is done!")
+            self.database_btn.configure(state='normal')
+            self.skip_btn.configure(state='normal')
+            self.analyze_btn.configure(state='disabled')
+            self.dynamic_btn.configure(state='disabled')
+            for radio in self.radios:
+                radio.configure(state='disabled')
+        except Exception as e:
+            mbox.showerror("Error", f"An error occurred: {str(e)}")  # new
 
     def save_files(self):
-        print("-----")
-        print(len(App.threats_objects))
-        self.folder_save = filedialog.askdirectory(title='Choose a directory')
+        try:
+            print("-----")
+            print(len(App.threats_objects))
+            self.folder_save = filedialog.askdirectory(title='Choose a directory')
 
-        for path in range(len(self.filenames_list)):
-            self.urls_list_save.append(self.folder_save + self.filenames_list[path])  # save excel
-            self.urls_list_save_word.append(self.folder_save + self.filenames_word[path])  # save word
+            for path in range(len(self.filenames_list)):
+                self.urls_list_save.append(self.folder_save + self.filenames_list[path])  # save excel
+                self.urls_list_save_word.append(self.folder_save + self.filenames_word[path])  # save word
 
-        if self.dict_values() == 1:
-            for obj in range(len(App.threats_objects)):
-                App.threats_objects[obj].save_result(self.urls_list_save[obj])
-                App.threats_objects[obj].save_result_word(self.urls_list_save_word[obj])
+            if self.dict_values() == 1:
+                for obj in range(len(App.threats_objects)):
+                    App.threats_objects[obj].save_result(self.urls_list_save[obj])
+                    App.threats_objects[obj].save_result_word(self.urls_list_save_word[obj])
 
-        elif self.dict_values() == 2:
-            for obj in range(len(App.program_versions_objects)):
-                App.program_versions_objects[obj].save_result(self.urls_list_save[obj])
-                App.program_versions_objects[obj].save_result_word(self.urls_list_save_word[obj])
+            elif self.dict_values() == 2:
+                for obj in range(len(App.program_versions_objects)):
+                    App.program_versions_objects[obj].save_result(self.urls_list_save[obj])
+                    App.program_versions_objects[obj].save_result_word(self.urls_list_save_word[obj])
 
-        elif self.dict_values() == 3:
-            for obj in range(len(App.antivirus_bases_objects)):
-                App.antivirus_bases_objects[obj].save_result(self.urls_list_save[obj])
-                App.antivirus_bases_objects[obj].save_result_word(self.urls_list_save_word[obj])
+            elif self.dict_values() == 3:
+                for obj in range(len(App.antivirus_bases_objects)):
+                    App.antivirus_bases_objects[obj].save_result(self.urls_list_save[obj])
+                    App.antivirus_bases_objects[obj].save_result_word(self.urls_list_save_word[obj])
 
-        elif self.dict_values() == 4:
-            for obj in range(len(App.network_attacks_objects)):
-                App.network_attacks_objects[obj].save_result(self.urls_list_save[obj])
+            elif self.dict_values() == 4:
+                for obj in range(len(App.network_attacks_objects)):
+                    App.network_attacks_objects[obj].save_result(self.urls_list_save[obj])
 
-        elif self.dict_values() == 5:
-            for obj in range(len(App.installed_software_objects)):
-                App.installed_software_objects[obj].save_result(self.urls_list_save[obj])
-        else:
-            output = "Invalid selection"
-            print(output)
+            elif self.dict_values() == 5:
+                for obj in range(len(App.installed_software_objects)):
+                    App.installed_software_objects[obj].save_result(self.urls_list_save[obj])
+            else:
+                output = "Invalid selection"
+                print(output)
 
-        self.info_message("Save", "Files successfully saved")
-        self.clear_state()
-        self.path_list.delete(0, tk.END)
+            mbox.showinfo("Save", "Files successfully saved")
+            self.clear_state()
+            # self.path_list.delete(0, tk.END)
+        except Exception as e:
+            mbox.showerror("Error", f"An error occurred: {str(e)}")  # new
 
     # "%Y-%m-%d/%S"
     def add_to_database(self):
-        if self.dict_values() == 1:  # 1
-            for obj in range(len(App.threats_objects)):
-                save.MongoDumper.df_to_json(App.threats_objects[obj].dict,
-                                            '{}'.format(self.filenames_list[obj][0:len(self.filenames_list[obj]) - 5])
-                                            + "_" + datetime.now().strftime("/%S"))
-        elif self.dict_values() == 2:  # 2
-            for obj in range(len(App.program_versions_objects)):
-                save.MongoDumper.df_to_json(App.program_versions_objects[obj].dict,
-                                            '{}'.format(self.filenames_list[obj][0:len(self.filenames_list[obj]) - 5])
-                                            + "_" + datetime.now().strftime("/%S"))
-        elif self.dict_values() == 3:
-            for obj in range(len(App.antivirus_bases_objects)):
-                save.MongoDumper.df_to_json(App.antivirus_bases_objects[obj].dict,
-                                            '{}'.format(self.filenames_list[obj][0:len(self.filenames_list[obj]) - 5])
-                                            + "_" + datetime.now().strftime("/%S"))
-        elif self.dict_values() == 4:
-            for obj in range(len(App.network_attacks_objects)):
-                save.MongoDumper.df_to_json(App.network_attacks_objects[obj].dict,
-                                            '{}'.format(self.filenames_list[obj][0:len(self.filenames_list[obj]) - 5])
-                                            + "_" + datetime.now().strftime("/%S"))
-        elif self.dict_values() == 5:
-            for obj in range(len(App.installed_software_objects)):
-                save.MongoDumper.df_to_json(App.installed_software_objects[obj].dict,
-                                            '{}'.format(self.filenames_list[obj][0:len(self.filenames_list[obj]) - 5])
-                                            + "_" + datetime.now().strftime("/%S"))
-        else:
-            output = "Invalid selection"
-            print(output)
+        try:
+            if self.dict_values() == 1:  # 1
+                for obj in range(len(App.threats_objects)):
+                    save.MongoDumper.df_to_json(App.threats_objects[obj].dict,
+                                                '{}'.format(self.filenames_list[obj][0:len(self.filenames_list[obj]) - 5])
+                                                + "_" + datetime.now().strftime("/%S"))
+            elif self.dict_values() == 2:  # 2
+                for obj in range(len(App.program_versions_objects)):
+                    save.MongoDumper.df_to_json(App.program_versions_objects[obj].dict,
+                                                '{}'.format(self.filenames_list[obj][0:len(self.filenames_list[obj]) - 5])
+                                                + "_" + datetime.now().strftime("/%S"))
+            elif self.dict_values() == 3:
+                for obj in range(len(App.antivirus_bases_objects)):
+                    save.MongoDumper.df_to_json(App.antivirus_bases_objects[obj].dict,
+                                                '{}'.format(self.filenames_list[obj][0:len(self.filenames_list[obj]) - 5])
+                                                + "_" + datetime.now().strftime("/%S"))
+            elif self.dict_values() == 4:
+                for obj in range(len(App.network_attacks_objects)):
+                    save.MongoDumper.df_to_json(App.network_attacks_objects[obj].dict,
+                                                '{}'.format(self.filenames_list[obj][0:len(self.filenames_list[obj]) - 5])
+                                                + "_" + datetime.now().strftime("/%S"))
+            elif self.dict_values() == 5:
+                for obj in range(len(App.installed_software_objects)):
+                    save.MongoDumper.df_to_json(App.installed_software_objects[obj].dict,
+                                                '{}'.format(self.filenames_list[obj][0:len(self.filenames_list[obj]) - 5])
+                                                + "_" + datetime.now().strftime("/%S"))
+            else:
+                output = "Invalid selection"
+                print(output)
 
-        self.info_message("Database", "Files successfully added to database")
-        self.skip_btn.configure(state='disabled')
-        self.save_btn.configure(state='normal')
+            mbox.showinfo("Database", "Files successfully added to database")
+            self.skip_btn.configure(state='disabled')
+            self.save_btn.configure(state='normal')
+        except Exception as e:
+            mbox.showerror("Error", f"An error occurred: {str(e)}")  # new
 
     def dynamic_report(self):
         return Form2(self, main.dynamic_dict)
         # user = dynamic_window.open()
 
-    @staticmethod
-    def info_message(title, message):
-        mbox.showinfo(title, message)
-
-    @staticmethod
-    def error_message(title, message):
-        mbox.showerror(title, message)
+    # @staticmethod
+    # def info_message(title, message):
+    #     mbox.showinfo(title, message)
+    #
+    # @staticmethod
+    # def error_message(title, message):
+    #     mbox.showerror(title, message)
