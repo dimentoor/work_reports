@@ -14,14 +14,56 @@ class NetworkAttacks:
     def __init__(self, path, sheet_name):
         self.path = path
         self.sheet_name = sheet_name
-        self.attacker_victim_1 = 0
-        self.attacker_victim_2 = 0
-        self.attacks = 0
-        self.date_time_attack = 0
-        self.date_attack = 0
-        self.unique = 0
+
         self.open_obj = save.ExcelLoader(self.path, self.sheet_name)
         self.dict = {}
+        self.dict_word = {}
+
+        self.attacker_victim_1 = 0
+        self.attacker_victim_1_text = ""  # \
+
+        self.attacker_victim_2 = 0
+        self.attacker_victim_2_text = ""
+
+        self.attacks = 0
+        self.attacks_text = ""
+
+        self.date_time_attack = 0
+        self.date_time_attack_text = ""
+
+        self.date_attack = 0
+        self.date_attack_text = ""
+
+        self.unique = 0
+        self.unique_text = "Отчет о сетевых атаках \n\n На листе unique_sample представлено количество уникальных " \
+                           "полей по каждому столбцу исходной таблицы."
+
+        self.empty_df = pd.DataFrame()  # for dict_word{}
+
+    def save_result(self, save_path):  # save excel
+        save.ExcelDumper.write_file(save_path, self.dict)
+
+    def save_result_word(self, save_path):  # save word
+        save.WordDumper.write_file(save_path, self.dict_word)
+
+    # def all_samples_program_versions(self):
+    #     self.open_obj.open_file()
+    #     self.unique_sample()
+    #     self.()
+    #     self.()
+    #     self.dict = {
+    #         "unique_sample": self.unique,
+    #         "": self.,
+    #         "": self.,
+    #         "": self.
+    #     }
+    #
+    #     self.dict_word = {
+    #         self.unique_text: self.unique,  # full df
+    #         self.: self.empty_df,
+    #         self.: self.empty_df,
+    #         self.: self.empty_df
+    #     }
 
     def save_result(self, save_path):
         self.dict = {
@@ -41,6 +83,8 @@ class NetworkAttacks:
         self.attacker_victim_sample_2()
         self.date_time_attacks_sample()
         self.date_attacks_sample()
+
+
 
     def unique_sample(self):
         self.unique = self.open_obj.table.nunique()

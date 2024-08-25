@@ -517,6 +517,7 @@ class App(tk.Tk):
             elif self.dict_values() == 4:
                 for obj in range(len(App.network_attacks_objects)):
                     App.network_attacks_objects[obj].save_result(self.urls_list_save[obj])
+                    # App.network_attacks_objects[obj].save_result_word(self.urls_list_save_word[obj])
 
             elif self.dict_values() == 5:
                 for obj in range(len(App.installed_software_objects)):
